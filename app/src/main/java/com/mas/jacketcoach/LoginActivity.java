@@ -2,9 +2,7 @@ package com.mas.jacketcoach;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mas.jacketcoach.helper.Validator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,19 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null){
             // reload();
         }
-
     }
 
-    // Helper method for validating an email
-    private boolean isValidEmail(CharSequence target) {
-        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
-    }
-
-    // Helper method for validating a password
-    // TODO: Add more logic
-    private boolean isValidPassword(String target) {
-        return !(target.trim().equalsIgnoreCase(""));
-    }
 
     // Button event listener for the login button
     // Uses Firebase authentication framework to login a registered user using email and password
@@ -74,12 +62,12 @@ public class LoginActivity extends AppCompatActivity {
         String enteredEmail = emailEditText.getText().toString();
         String enteredPassword = passwordEditText.getText().toString();
 
-        if (!isValidEmail(enteredEmail)) {
+        if (!Validator.isValidEmail(enteredEmail)) {
             emailEditText.setError("Invalid Email Entered");
             return;
         }
 
-        if (!isValidPassword(enteredPassword)) {
+        if (!Validator.isValidPassword(enteredPassword)) {
             passwordEditText.setError("Invalid Password Entered");
             return;
         }
@@ -120,7 +108,14 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    public void registerUser(View view) {
+    // Register button onClick handler
+    public void registerUserOnLogin(View view) {
+        Intent registerUserActivity = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivityForResult(registerUserActivity, 0);
+    }
+
+    // Debug button onClick handler (to be removed)
+    public void debugOnClick(View view) {
         // TODO: Farzam: IMPLEMENT REGISTER PAGE AND REMOVE BELOW TRANSITION. FOR NOW WE JUST TRANSITION TO MAIN PAGE FOR EASIER DEVELOPMENT THERE
         Intent mainUserActivity = new Intent(LoginActivity.this, MainActivity.class);
         mainUserActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

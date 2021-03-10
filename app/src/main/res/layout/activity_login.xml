@@ -42,7 +42,6 @@
                 android:autofillHints="Email"
                 android:hint="Email"
                 android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginStart="30dp" />
 
@@ -55,7 +54,6 @@
                 android:autofillHints="Password"
                 android:hint="Password"
                 android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginStart="30dp" />
 
@@ -73,7 +71,6 @@
                 app:strokeColor="@color/white"
                 app:strokeWidth="1dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginStart="30dp"
                 android:onClick="loginUser"/>
@@ -91,11 +88,28 @@
                 app:strokeColor="@color/GT_Color"
                 app:strokeWidth="1dp"
                 android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginEnd="30dp"
                 android:layout_marginStart="30dp"
                 android:gravity="start"
-                android:onClick="registerUser"/>
+                android:onClick="registerUserOnLogin"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:theme="@style/BorderedButton"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:id="@+id/debugButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="DEBUG"
+                app:backgroundTint="@color/red"
+                app:cornerRadius="4dp"
+                app:strokeColor="@color/GT_Color"
+                app:strokeWidth="1dp"
+                android:height="80dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:onClick="debugOnClick"/>
 
             <!-- Source: https://www.courierherald.com/wp-content/uploads/2021/03/24448735_web1_Sports-Seasons-ECH-210310_1.jpg -->
 <!--            <ImageView-->

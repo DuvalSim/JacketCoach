@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#BC0303</color>
 
     <!-- https://stackoverflow.com/questions/22192291/how-to-change-the-status-bar-color-in-android -->
     <color name="colorPrimaryDark">@color/GT_Color_Navy</color>
