@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "529810889510",
+    "project_id": "jacketcoach-8bfb2",
+    "storage_bucket": "jacketcoach-8bfb2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529810889510:android:81827e76b0798fd1a17fe7",
+        "android_client_info": {
+          "package_name": "com.mas.jacketcoach"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529810889510-qs5r0dvjr3e02dhsdoa65ddie45uqijb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-v4aaSTdRm3_fRQ6NJowrbJf1u853KTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529810889510-qs5r0dvjr3e02dhsdoa65ddie45uqijb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

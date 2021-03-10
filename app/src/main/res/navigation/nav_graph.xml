@@ -6,7 +6,7 @@
     app:startDestination="@id/mapsFragment">
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.jacketcoach.MapsFragment"
+        android:name="com.mas.jacketcoach.MapsFragment"
         android:label="@string/map_fragment_label"
         tools:layout="@layout/fragment_maps" />
 </navigation>
