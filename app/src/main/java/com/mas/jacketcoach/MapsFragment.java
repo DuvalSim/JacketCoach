@@ -1,6 +1,9 @@
 package com.mas.jacketcoach;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +17,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mas.jacketcoach.model.Event;
 
-public class MapsFragment extends Fragment {
+import java.util.ArrayList;
+
+public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
+
+    private FirebaseEvents eventsData;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -31,9 +40,19 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            ArrayList<Event> events = new ArrayList<>();
+            eventsData = new FirebaseEvents();
+            events = eventsData.getEvents();
+
+            for(int i=0; i<events.size();i++){
+                LatLng eventLocation = new LatLng(events.get(i).getLatitude(),events.get(i).getLongitude());
+                googleMap.addMarker(new MarkerOptions()
+                        .position(eventLocation)
+                        .title(events.get(i).getNom())
+                        .snippet(events.get(i).getSport() + events.get(i).getDate()));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(eventLocation));
+                googleMap.setOnInfoWindowClickListener(MapsFragment.this);
+            }
         }
     };
 
@@ -53,5 +72,24 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(marker.getSnippet())
+                .setCancelable(true)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 }
