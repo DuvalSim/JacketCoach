@@ -8,7 +8,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -23,11 +22,13 @@ public class MainActivity extends AppCompatActivity {
         /* NAVIGATION */
 
         //Initialize Bottom Navigation View
-        BottomNavigationView navView = findViewById(R.id.bottomNav_view);
+        BottomNavigationView bottomNavView = findViewById(R.id.bottomNav_view);
 
+        //Initialize top bar
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_map,R.id.navigation_chat,R.id.navigation_profile)
+                R.id.map_fragment,R.id.chat_fragment,R.id.profile_fragment)
                 .build();
+
         //Initialize navigation controller
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -35,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         NavigationUI.setupActionBarWithNavController(this,navController,appBarConfiguration);
-        NavigationUI.setupWithNavController(navView,navController);
+
+        NavigationUI.setupWithNavController(bottomNavView,navController);
 
         /* NAVIGATION END */
     }

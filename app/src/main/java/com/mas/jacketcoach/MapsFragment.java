@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -23,44 +25,50 @@ import com.mas.jacketcoach.model.Event;
 
 import java.util.ArrayList;
 
-public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener {
+public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback {
 
     private FirebaseEvents eventsData;
+    private GoogleMap mGoogleMap;
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
-
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            ArrayList<Event> events = new ArrayList<>();
-            eventsData = new FirebaseEvents();
-            events = eventsData.getEvents();
-
-            for(int i=0; i<events.size();i++){
-                LatLng eventLocation = new LatLng(events.get(i).getLatitude(),events.get(i).getLongitude());
-                googleMap.addMarker(new MarkerOptions()
-                        .position(eventLocation)
-                        .title(events.get(i).getNom())
-                        .snippet(events.get(i).getSport() + events.get(i).getDate()));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(eventLocation));
-                googleMap.setOnInfoWindowClickListener(MapsFragment.this);
-            }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        MapStateManager mapStateManager = new MapStateManager(this.getContext());
+        CameraPosition cameraPosition = mapStateManager.getSavedCameraPosition();
+        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        if(cameraPosition != null){
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            mGoogleMap.moveCamera(update);
         }
-    };
+        ArrayList<Event> events = new ArrayList<>();
+        eventsData = new FirebaseEvents();
+        events = eventsData.getEvents();
+
+        for(int i=0; i<events.size();i++){
+            LatLng eventLocation = new LatLng(events.get(i).getLatitude(),events.get(i).getLongitude());
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(eventLocation)
+                    .title(events.get(i).getNom())
+                    .snippet(events.get(i).getSport() + events.get(i).getDate()));
+            mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
+        }
+//        LatLng sydney = new LatLng(-34, 151);
+//        mGoogleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d("NAVIGATION", "activity created");
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d("NAVIGATION", "HEY");
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -70,8 +78,30 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
+            mapFragment.getMapAsync(this);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("NAVIGATION", "on Pause");
+//        MapStateManager mapStateManager = new MapStateManager(this.getContext());
+//        mapStateManager.saveMapState(mGoogleMap);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("NAVIGATION", "on Resume");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("NAVIGATION", "on STOP");
+        MapStateManager mapStateManager = new MapStateManager(this.getContext());
+        mapStateManager.saveMapState(mGoogleMap);
     }
 
     @Override
