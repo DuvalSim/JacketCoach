@@ -4,23 +4,29 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public class Event {
     private int id;
-    private String nom;
+    private int idOrganizer;
+    private String name;
     private String sport;
     private String date;
     private double latitude;
     private double longitude;
+    private ArrayList<String> players;
 
-    public Event(int id, String nom, String sport, String date, double latitude, double longitude) {
+    public Event(int id, int idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players) {
         this.id = id;
-        this.nom = nom;
+        this.idOrganizer = idOrganizer;
+        this.name = name;
         this.sport = sport;
         this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.players = players;
     }
 
     public int getId() {
@@ -31,12 +37,20 @@ public class Event {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public int getIdOrganizer() {
+        return idOrganizer;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setIdOrganizer(int idOrganizer) {
+        this.idOrganizer = idOrganizer;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String nom) {
+        this.name = nom;
     }
 
     public String getSport() {
@@ -71,22 +85,45 @@ public class Event {
         this.longitude = longitude;
     }
 
+    public ArrayList<String> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<String> players) {
+        this.players = players;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", idOrganizer=" + idOrganizer +
+                ", name='" + name + '\'' +
+                ", sport='" + sport + '\'' +
+                ", date='" + date + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", players=" + players +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
         return id == event.id &&
+                idOrganizer == event.idOrganizer &&
                 Double.compare(event.latitude, latitude) == 0 &&
                 Double.compare(event.longitude, longitude) == 0 &&
-                Objects.equals(nom, event.nom) &&
-                Objects.equals(sport, event.sport) &&
-                Objects.equals(date, event.date);
+                name.equals(event.name) &&
+                sport.equals(event.sport) &&
+                date.equals(event.date) &&
+                Objects.equals(players, event.players);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public int hashCode() {
-        return Objects.hash(id, nom, sport, date, latitude, longitude);
+        return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players);
     }
 }
