@@ -13,14 +13,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("NAVIGATION", "quesry is :" + query);
+                Log.d("NAVIGATION", "query is :" + query);
                 return false;
             }
 
@@ -91,11 +88,6 @@ public class MainActivity extends AppCompatActivity {
         });
         return true;
     }
-
-
-
-
-
 
     // ToolBar actions
     @Override
@@ -118,5 +110,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 }

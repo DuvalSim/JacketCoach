@@ -1,10 +1,12 @@
 package com.mas.jacketcoach;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback {
+public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mGoogleMap;
     private FirebaseEvents eventsData;
@@ -38,6 +40,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        googleMap.setOnMapLongClickListener(MapsFragment.this);
         MapStateManager mapStateManager = new MapStateManager(this.getContext());
         CameraPosition cameraPosition = mapStateManager.getSavedCameraPosition();
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
@@ -120,5 +123,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         MarkerInfo markerInfo = mMarkerMap.get(marker);
         EventWindowMap event = new EventWindowMap(markerInfo);
         event.show(getParentFragmentManager(),"eventMap");
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("LAT_LNG", latLng);
+        Intent intent = new Intent(getActivity(), AddEventActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
