@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class Event {
     private int id;
-    private int idOrganizer;
+    private String idOrganizer;
     private String name;
     private String sport;
     private String date;
@@ -18,7 +18,7 @@ public class Event {
     private double longitude;
     private ArrayList<String> players;
 
-    public Event(int id, int idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players) {
+    public Event(int id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players) {
         this.id = id;
         this.idOrganizer = idOrganizer;
         this.name = name;
@@ -37,11 +37,11 @@ public class Event {
         this.id = id;
     }
 
-    public int getIdOrganizer() {
+    public String getIdOrganizer() {
         return idOrganizer;
     }
 
-    public void setIdOrganizer(int idOrganizer) {
+    public void setIdOrganizer(String idOrganizer) {
         this.idOrganizer = idOrganizer;
     }
 
@@ -113,7 +113,7 @@ public class Event {
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
         return id == event.id &&
-                idOrganizer == event.idOrganizer &&
+                idOrganizer.equals(event.idOrganizer) &&
                 Double.compare(event.latitude, latitude) == 0 &&
                 Double.compare(event.longitude, longitude) == 0 &&
                 name.equals(event.name) &&

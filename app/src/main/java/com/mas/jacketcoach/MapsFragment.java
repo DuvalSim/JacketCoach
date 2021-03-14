@@ -45,7 +45,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener {
+
+public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mGoogleMap;
     private FirebaseEvents eventsData;
@@ -73,6 +74,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        googleMap.setOnMapLongClickListener(MapsFragment.this);
         MapStateManager mapStateManager = new MapStateManager(this.getContext());
         CameraPosition cameraPosition = mapStateManager.getSavedCameraPosition();
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
@@ -196,7 +198,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         Status status = Autocomplete.getStatusFromIntent(data);
         Log.i("Autocomplete : ", "status returned : " + status);
 
-        if(requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             Log.i("Autocomplete : ", "onActivityResults");
             if (resultCode == AutocompleteActivity.RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
@@ -213,6 +215,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 Log.i("Autocomplete : ", "Operation canceled");
             }
         }
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    public void onMapLongClick(LatLng latLng) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("LAT_LNG", latLng);
+        Intent intent = new Intent(getActivity(), AddEventActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+
     }
 }
