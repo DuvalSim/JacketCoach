@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- To fix the tab colors on BottomNavigationView on MainActivity -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="@color/GT_Color" />
+    <item android:color="@android:color/darker_gray"  />
+</selector>

@@ -11,6 +11,5 @@
     </style>
 
     <style name="BorderedButton" parent="Theme.MaterialComponents">
-
     </style>
 </resources>

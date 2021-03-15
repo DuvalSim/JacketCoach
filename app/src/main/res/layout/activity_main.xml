@@ -5,10 +5,7 @@
     android:id="@+id/constraintContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-
-    >
-
+    android:orientation="vertical">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav_view"
@@ -16,8 +13,8 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         app:itemBackground="@color/GT_Color_Navy"
-        app:itemTextColor="@color/GT_Color"
-        app:itemTextAppearanceInactive="@color/white"
+        app:itemIconTint="@color/tab_background"
+        app:itemTextColor="@color/tab_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
