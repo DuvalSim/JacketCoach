@@ -1,6 +1,8 @@
 package com.mas.jacketcoach;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +15,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +55,12 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(R.color.GT_Color_Navy));
         }
 
-        /* NAVIGATION END */
+        //------------- MAP IS RESET -----------------
+
+        //TODO RESET THE MAP USING A LOGIN VARIABLE ??
+        MapStateManager mapStateManager = new MapStateManager(this.getApplicationContext());
+        mapStateManager.setMapStateToOutdated();
+
     }
 
     @Override
@@ -56,5 +68,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("NAVIGATION", "TEST");
     }
+
+
 
 }

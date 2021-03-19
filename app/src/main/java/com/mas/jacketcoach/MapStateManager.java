@@ -17,6 +17,7 @@ public class MapStateManager {
     private static final String MAPTYPE = "MAPTYPE";
 
     private static final String PREFS_NAME ="mapState";
+    private static boolean mapHasalreadyBeenCreated;
 
     private SharedPreferences mapStatePrefs;
 
@@ -36,8 +37,14 @@ public class MapStateManager {
         editor.putFloat(BEARING, position.bearing);
         editor.putInt(MAPTYPE, mapMie.getMapType());
         editor.commit();
+        mapHasalreadyBeenCreated = true;
     }
-
+    public boolean mapStateIsOutdated() {
+        //outdated if application just started or no map available
+        double latitude = mapStatePrefs.getFloat(LATITUDE, 0);
+        return (! mapHasalreadyBeenCreated) || (latitude == 0);
+    };
+    public void setMapStateToOutdated() {mapHasalreadyBeenCreated = false; };
     public CameraPosition getSavedCameraPosition() {
         double latitude = mapStatePrefs.getFloat(LATITUDE, 0);
         if (latitude == 0) {
@@ -57,4 +64,5 @@ public class MapStateManager {
     public int getSavedMapType() {
         return mapStatePrefs.getInt(MAPTYPE, GoogleMap.MAP_TYPE_NORMAL);
     }
+
 }
