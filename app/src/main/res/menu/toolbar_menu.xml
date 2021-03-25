@@ -13,6 +13,11 @@
         android:icon="@drawable/ic_search_action"
         android:title="@string/action_search"
         app:showAsAction="always|collapseActionView" />
+    <item
+        android:id="@+id/action_centerOnLocation"
+        android:icon="@drawable/ic_location_action"
+        android:title="Center on current location"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_favorite"
