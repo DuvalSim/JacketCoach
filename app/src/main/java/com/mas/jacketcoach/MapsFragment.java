@@ -43,6 +43,9 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.MarkerInfo;
 
@@ -60,7 +63,8 @@ import java.util.concurrent.Executor;
 public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener, GoogleMap.OnMapLongClickListener {
 
     private GoogleMap mGoogleMap;
-    private FirebaseEvents eventsData;
+    private DatabaseReference mDatabase;
+    private ArrayList<Event> events = new ArrayList<>();
     private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
 
@@ -71,12 +75,14 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 911;
     //10 for city, 15 for streets
     protected static int DEFAULT_ZOOM = 13;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //want to receive menu related callbacks
         setHasOptionsMenu(true);
         String apiKey = getString(R.string.google_maps_key);
+        this.getEventsFirebase();
 
         /**
          * Initialize Places. For simplicity, the API key is hard-coded. In a production
@@ -102,33 +108,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         MapStateManager mapStateManager = new MapStateManager(this.getContext());
 
-        if (mapStateManager.mapStateIsOutdated()){
+        if (mapStateManager.mapStateIsOutdated()) {
             Log.d("NAVIGATION", "Map outdated - getting current location");
             setCameraOnDeviceLocation();
         } else {
             setCameraOnSavedState();
-        }
-
-        ArrayList<Event> events = new ArrayList<>();
-        eventsData = new FirebaseEvents();
-        events = eventsData.getEventsFirebase();
-
-        for(int i=0; i<events.size();i++){
-            LatLng eventLocation = new LatLng(events.get(i).getLatitude(),events.get(i).getLongitude());
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-               Date date = format.parse(events.get(i).getDate());
-                if (date.after(new Date())) {
-                    Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                            .position(eventLocation)
-                            .title(events.get(i).getName()));
-                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
-                    mMarkerMap.put(marker, markerInfo);
-                    mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -171,7 +155,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     public void onInfoWindowClick(Marker marker) {
         MarkerInfo markerInfo = mMarkerMap.get(marker);
         EventWindowMap event = new EventWindowMap(markerInfo);
-        event.show(getParentFragmentManager(),"eventMap");
+        event.show(getParentFragmentManager(), "eventMap");
     }
 
     @Override
@@ -180,7 +164,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
-                Log.d("NAVIGATION","setting");
+                Log.d("NAVIGATION", "setting");
                 return true;
 
             case R.id.action_favorite:
@@ -236,6 +220,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
     public void onMapLongClick(LatLng latLng) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("LAT_LNG", latLng);
@@ -249,12 +234,12 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
     //---------------------MAP POSITION-----------------
 
-    private void setCameraOnSavedState(){
+    private void setCameraOnSavedState() {
 
         Log.d("NAVIGATION", "Getting last saved map");
         MapStateManager mapStateManager = new MapStateManager(this.getContext());
         CameraPosition cameraPosition = mapStateManager.getSavedCameraPosition();
-        if(cameraPosition != null){
+        if (cameraPosition != null) {
             Log.d("NAVIGATION", "Setting map position with saved map found");
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(cameraPosition);
             mGoogleMap.moveCamera(update);
@@ -265,9 +250,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
     }
 
-    private void setCameraOnDefaultPosition(){
+    private void setCameraOnDefaultPosition() {
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(33.753746,-84.386330), DEFAULT_ZOOM));
+                new LatLng(33.753746, -84.386330), DEFAULT_ZOOM));
     }
 
 
@@ -290,6 +275,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -312,7 +298,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     }
 
     private void updateLocationUI() {
-        Log.d("NAVIGATION","UPDATE UI");
+        Log.d("NAVIGATION", "UPDATE UI");
 
         try {
             if (locationPermissionGranted) {
@@ -323,7 +309,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
                 lastKnownLocation = null;
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("NAVIGATION", e.getMessage());
         }
     }
@@ -356,11 +342,60 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 setCameraOnSavedState();
             }
 
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.d("NAVIGATION", "security pbm");
             Log.e("NAVIGATION", e.getMessage(), e);
         }
     }
 
     //endregion
+
+    public void getEventsFirebase() {
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("events");
+        mDatabase.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
+                    for (DataSnapshot event : task.getResult().getChildren()) {
+                        int id = Integer.parseInt(event.child("id").getValue().toString());
+                        String idOrganizer = event.child("idOrganizer").getValue().toString();
+                        String name = event.child("name").getValue().toString();
+                        String sport = event.child("sport").getValue().toString();
+                        String date = event.child("date").getValue().toString();
+                        double latitude = Double.parseDouble(event.child("latitude").getValue().toString());
+                        double longitude = Double.parseDouble(event.child("longitude").getValue().toString());
+                        ArrayList<String> players = new ArrayList<>();
+                        for (DataSnapshot player : event.getChildren()) {
+                            players.add(player.getValue().toString());
+                        }
+                        events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
+                    }
+                    addEventsOnMap();
+                }
+            }
+        });
+
+    }
+
+    public void addEventsOnMap(){
+        for (int i = 0; i < events.size(); i++) {
+            LatLng eventLocation = new LatLng(events.get(i).getLatitude(), events.get(i).getLongitude());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date date = format.parse(events.get(i).getDate());
+                if (date.after(new Date())) {
+                    Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                            .position(eventLocation)
+                            .title(events.get(i).getName()));
+                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
+                    mMarkerMap.put(marker, markerInfo);
+                    mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
