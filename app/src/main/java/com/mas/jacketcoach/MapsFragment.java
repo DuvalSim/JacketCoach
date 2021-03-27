@@ -171,6 +171,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 // User chose the "Favorite" action, mark the current item
                 // as a favorite...
                 return true;
+
+            case R.id.action_centerOnLocation:
+                setCameraOnDeviceLocation(false);
+                return true;
             case R.id.action_search:
                 onSearchCalled();
                 return true;
@@ -313,7 +317,43 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             Log.e("NAVIGATION", e.getMessage());
         }
     }
+    //Set Camera on Device location if location is available
+    private void setCameraOnDeviceLocation(Boolean setDefaultIfUnavailable){
+        if (setDefaultIfUnavailable){
+            setCameraOnDeviceLocation();
+        }
+        getLocationPermission();
+        try {
+            if (locationPermissionGranted) {
+                Log.d("NAVIGATION", "permission granted");
+                Task<Location> locationResult = fusedLocationClient.getLastLocation();
+                locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
 
+                        if (task.isSuccessful()) {
+                            
+                            // Set the map's camera position to the current location of the device.
+                            lastKnownLocation = task.getResult();
+                            if (lastKnownLocation != null) {
+                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(lastKnownLocation.getLatitude(),
+                                                lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            }
+                        }
+                    }
+                });
+            }
+
+        } catch (SecurityException e)  {
+            Log.d("NAVIGATION", "security pbm");
+            Log.e("NAVIGATION", e.getMessage(), e);
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(this.getContext(), "Could not get device location", Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+    //Set Camera on Device Location or on last saved state if the device location cannot be retrieved
     private void setCameraOnDeviceLocation() {
         try {
             if (locationPermissionGranted) {
