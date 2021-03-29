@@ -17,16 +17,24 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mas.jacketcoach.helper.Validator;
+import com.mas.jacketcoach.model.User;
+
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText nickNameEditText;
-    private EditText firstNameEditText;
+    private EditText fullNameEditText;
     private EditText registerEmailAddressEditText;
     private EditText registerPasswordEditText;
 
     private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private DatabaseReference mDatabase;
 
     private final String TAG = "RegisterActivityLog";
 
@@ -38,9 +46,12 @@ public class RegisterActivity extends AppCompatActivity {
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
+        // Initialize Firebase DB
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         // Initialize UI elements
         nickNameEditText = (EditText) findViewById(R.id.nickNameEditText);
-        firstNameEditText = (EditText) findViewById(R.id.firstNameEditText);
+        fullNameEditText = (EditText) findViewById(R.id.fullNameEditText);
         registerEmailAddressEditText = (EditText) findViewById(R.id.registerEmailAddressEditText);
         registerPasswordEditText = (EditText) findViewById(R.id.registerPasswordEditText);
 
@@ -50,8 +61,8 @@ public class RegisterActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null){
+        mUser = mAuth.getCurrentUser();
+        if (mUser != null){
             // reload();
         }
     }
@@ -59,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
     // Register button onClick handler
     public void registerUser(View view) {
         String enteredNickname = nickNameEditText.getText().toString();
-        String enteredFirstName = firstNameEditText.getText().toString();
+        String enteredFirstName = fullNameEditText.getText().toString();
 
         if (!Validator.isValidText(enteredNickname)) {
             nickNameEditText.setError("Invalid Nickname Entered");
@@ -67,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (!Validator.isValidText(enteredFirstName)) {
-            firstNameEditText.setError("Invalid Name Entered");
+            fullNameEditText.setError("Invalid Name Entered");
             return;
         }
 
@@ -93,6 +104,18 @@ public class RegisterActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
 
+                            // Get the current user and update their Firebase profile name
+                            mUser = Objects.requireNonNull(task.getResult()).getUser();
+
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(enteredFirstName)
+                                    .build();
+                            mUser.updateProfile(profileUpdates);
+
+                            // Update the firebase user DB with the user info
+                            User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail);
+                            updateUsersDatabase(currentUser);
+
                             Toast.makeText(RegisterActivity.this, "Welcome " + enteredFirstName, Toast.LENGTH_SHORT).show();
 
                             // Create new user session
@@ -106,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
                             // Display error reason to the user
                             AlertDialog.Builder errorBuilder = new AlertDialog.Builder(RegisterActivity.this);
                             errorBuilder.setTitle("Account Creation Failed");
-                            errorBuilder.setMessage(task.getException().getMessage());
+                            errorBuilder.setMessage(Objects.requireNonNull(task.getException()).getMessage());
                             errorBuilder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -119,5 +142,12 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void updateUsersDatabase(User currentUser) {
+        // Creating a user reference based on the unique UID generated by Firebase auth
+        // Note: UID will both be a parent and a children
+        DatabaseReference currentUserRef = mDatabase.child("Users").child(currentUser.getUid());
+        currentUserRef.setValue(currentUser);
     }
 }
