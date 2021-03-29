@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -115,8 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
                             // Update the firebase user DB with the user info
                             User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail);
                             updateUsersDatabase(currentUser);
-
-                            Toast.makeText(RegisterActivity.this, "Welcome " + enteredFirstName, Toast.LENGTH_SHORT).show();
 
                             // Create new user session
                             Intent mainUserActivity = new Intent(RegisterActivity.this, MainActivity.class);

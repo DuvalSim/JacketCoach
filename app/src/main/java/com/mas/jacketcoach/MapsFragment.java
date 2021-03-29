@@ -7,8 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -35,7 +32,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -43,6 +39,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -57,7 +54,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 
 public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener, GoogleMap.OnMapLongClickListener {
@@ -68,6 +64,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
 
+    // The current logged in user handle
+    private FirebaseAuth mAuth;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Location lastKnownLocation;
@@ -83,6 +81,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         setHasOptionsMenu(true);
         String apiKey = getString(R.string.google_maps_key);
         this.getEventsFirebase();
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
         /**
          * Initialize Places. For simplicity, the API key is hard-coded. In a production
@@ -178,6 +179,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             case R.id.action_search:
                 onSearchCalled();
                 return true;
+            case R.id.action_signout:
+                signOutUser();
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -185,6 +189,25 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
         }
 
+    }
+
+    private void signOutUser() {
+        // Distinguish between DEBUG and actual user mode
+        // TODO: OnCreate of main, check if no user is logged in and crash (you know what I mean) cause security fam
+        if (mAuth.getCurrentUser() != null) {
+            Toast.makeText(getContext(), "Goodbye " + mAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "DEBUG MODE - Signed Out", Toast.LENGTH_SHORT).show();
+        }
+
+        // Sign Out the handle regardless
+        mAuth.signOut();
+
+        // Start a fresh app instance
+        // TODO: In a production Android app, this should be done by a robust receiver instead
+        Intent loginUserActivity = new Intent(getContext(), LoginActivity.class);
+        loginUserActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginUserActivity);
     }
 
     public void onSearchCalled() {

@@ -15,8 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.mas.jacketcoach.helper.Validator;
 
 public class LoginActivity extends AppCompatActivity {
@@ -48,7 +46,10 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null){
-            // reload();
+            // Start the main activity if user is authenticated (making sure activity stack is cleared)
+            Intent mainUserActivity = new Intent(LoginActivity.this, MainActivity.class);
+            mainUserActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(mainUserActivity);
         }
     }
 
@@ -80,15 +81,6 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-
-                            Toast.makeText(LoginActivity.this, "Login Successful. Welcome!", Toast.LENGTH_SHORT).show();
-
-                            // Write a message to the database
-                            // TODO: Firebase realtime DB sample check this out
-                            // https://firebase.google.com/docs/database/android/start
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference myRef = database.getReference("message");
-                            myRef.setValue("Hello, World!");
 
                             // Successfully signed in
                             // No need to pass the user to the other intent, this is a singleton object that can be accessed everywhere like above

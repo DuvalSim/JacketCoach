@@ -1,14 +1,12 @@
 package com.mas.jacketcoach;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toolbar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -16,11 +14,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
         MapStateManager mapStateManager = new MapStateManager(this.getApplicationContext());
         mapStateManager.setMapStateToOutdated();
 
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            Toast.makeText(this, "Signed in ID: " + mAuth.getCurrentUser().getDisplayName() + " !", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "DEBUG MODE - Signed In with no actual user", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

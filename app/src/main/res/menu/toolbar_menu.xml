@@ -30,4 +30,9 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
 
+    <!-- Firebase Auth user sign out in overflow -->
+    <item android:id="@+id/action_signout"
+        android:title="@string/action_signout"
+        app:showAsAction="never" />
+
 </menu>
