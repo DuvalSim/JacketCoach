@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mapStateManager.setMapStateToOutdated();
 
 
+        // DEBUG
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             Toast.makeText(this, "Signed in ID: " + mAuth.getCurrentUser().getDisplayName() + " !", Toast.LENGTH_SHORT).show();

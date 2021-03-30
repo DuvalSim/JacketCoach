@@ -6,6 +6,11 @@ public class User {
     private String fullName;
     private String email;
 
+    // Empty constructor required for reading database into an object using ValueEventListener
+    public User() {
+
+    }
+
     // Model class for a firebase user
     public User(String uid, String playNickname, String fullName, String email) {
         this.uid = uid;

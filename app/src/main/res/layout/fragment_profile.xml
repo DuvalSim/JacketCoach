@@ -1,14 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Profile fragment" />
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-</FrameLayout>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userImageDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:src="@drawable/menu_profile_icon"
+                app:civ_border_width="6dp"
+                app:civ_border_color="@color/GT_Color"/>
+
+            <EditText
+                android:id="@+id/nickNameDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="User: Play Nickname"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:importantForAutofill="no"
+                android:textSize="18sp"/>
+
+            <EditText
+                android:id="@+id/fullNameDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="User: Full Name"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:importantForAutofill="no"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/emailDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:autofillHints="Email"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:theme="@style/BorderedButton"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:id="@+id/updateUserInfoButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/GT_Color"
+                android:textColor="@color/white"
+                android:text="Update User Info"
+                app:backgroundTint="@android:color/transparent"
+                app:cornerRadius="4dp"
+                app:strokeColor="@color/GT_Color"
+                app:strokeWidth="1dp"
+                android:height="80dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"/>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</LinearLayout>

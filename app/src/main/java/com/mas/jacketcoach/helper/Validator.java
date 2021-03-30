@@ -18,6 +18,6 @@ public class Validator {
 
     // TODO: Add more logic
     public static boolean isValidText(String target) {
-        return !(target.trim().equalsIgnoreCase(""));
+        return !(target.trim().equalsIgnoreCase("")) && (target.length() > 4);
     }
 }

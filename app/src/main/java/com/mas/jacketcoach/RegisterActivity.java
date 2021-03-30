@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -110,6 +111,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     .setDisplayName(enteredFirstName)
                                     .build();
                             mUser.updateProfile(profileUpdates);
+
+                            Toast.makeText(RegisterActivity.this, mAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
                             // Update the firebase user DB with the user info
                             User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail);
