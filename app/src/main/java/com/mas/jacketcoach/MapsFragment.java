@@ -168,10 +168,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 Log.d("NAVIGATION", "setting");
                 return true;
 
-            case R.id.action_favorite:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
+                // Hidden for Sprint 4
+//            case R.id.action_favorite:
+//                // User chose the "Favorite" action, mark the current item
+//                // as a favorite...
+//                return true;
 
             case R.id.action_centerOnLocation:
                 setCameraOnDeviceLocation(false);
