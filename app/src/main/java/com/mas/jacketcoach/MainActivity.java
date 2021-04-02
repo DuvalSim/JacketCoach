@@ -16,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mas.jacketcoach.helper.MapStateManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO RESET THE MAP USING A LOGIN VARIABLE ??
         MapStateManager mapStateManager = new MapStateManager(this.getApplicationContext());
-        mapStateManager.setMapStateToOutdated();
+        mapStateManager.onCreateMainActivity();
 
 
         // DEBUG

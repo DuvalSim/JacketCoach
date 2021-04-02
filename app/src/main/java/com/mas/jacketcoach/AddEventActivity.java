@@ -16,11 +16,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mas.jacketcoach.helper.MapStateManager;
 import com.mas.jacketcoach.helper.Validator;
 import com.mas.jacketcoach.model.Event;
 
@@ -133,6 +135,8 @@ public class AddEventActivity extends AppCompatActivity {
         Event event = new Event(1, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players);
         newRef.setValue(event);
         Toast.makeText(getApplicationContext(), "Event Created!", Toast.LENGTH_SHORT);
+        MapStateManager mapStateManager = new MapStateManager(this.getApplicationContext());
+        mapStateManager.centerOnEvent((float) latlng.latitude,(float) latlng.longitude);
         Intent intent = new Intent(AddEventActivity.this, MainActivity.class);
         startActivity(intent);
     }

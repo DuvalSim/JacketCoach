@@ -1,4 +1,4 @@
-package com.mas.jacketcoach;
+package com.mas.jacketcoach.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,7 +17,8 @@ public class MapStateManager {
     private static final String MAPTYPE = "MAPTYPE";
 
     private static final String PREFS_NAME ="mapState";
-    private static boolean mapHasalreadyBeenCreated;
+    private static boolean mapHasalreadyBeenCreated = false;
+    private static boolean centeredOnEvent = false;
 
     private SharedPreferences mapStatePrefs;
 
@@ -38,13 +39,17 @@ public class MapStateManager {
         editor.putInt(MAPTYPE, mapMie.getMapType());
         editor.commit();
         mapHasalreadyBeenCreated = true;
+        centeredOnEvent = false;
     }
     public boolean mapStateIsOutdated() {
         //outdated if application just started or no map available
         double latitude = mapStatePrefs.getFloat(LATITUDE, 0);
-        return (! mapHasalreadyBeenCreated) || (latitude == 0);
+
+        Boolean outdated = !centeredOnEvent && ((! mapHasalreadyBeenCreated) || (latitude == 0));
+        return outdated ;
     };
-    public void setMapStateToOutdated() {mapHasalreadyBeenCreated = false; };
+
+    public void onCreateMainActivity() {mapHasalreadyBeenCreated = false; };
     public CameraPosition getSavedCameraPosition() {
         double latitude = mapStatePrefs.getFloat(LATITUDE, 0);
         if (latitude == 0) {
@@ -59,6 +64,15 @@ public class MapStateManager {
 
         CameraPosition position = new CameraPosition(target, zoom, tilt, bearing);
         return position;
+    }
+
+    public void centerOnEvent(float latitude, float longitude) {
+        SharedPreferences.Editor editor = mapStatePrefs.edit();
+        editor.putFloat(LATITUDE, latitude);
+        editor.putFloat(LONGITUDE,longitude);
+        editor.commit();
+        centeredOnEvent = true;
+
     }
 
     public int getSavedMapType() {
