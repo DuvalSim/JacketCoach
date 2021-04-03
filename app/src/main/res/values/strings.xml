@@ -20,4 +20,15 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="action_signout">Sign Out</string>
+    <string-array name="sports_dropdown">
+        <item>Basketball</item>
+        <item>Volleyball</item>
+        <item>Soccer</item>
+        <item>Tennis</item>
+        <item>Football</item>
+        <item>Rugby</item>
+        <item>Ultimate</item>
+        <item>Handball</item>
+        <item>Other</item>
+    </string-array>
 </resources>

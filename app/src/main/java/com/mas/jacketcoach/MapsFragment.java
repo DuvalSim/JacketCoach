@@ -63,6 +63,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private ArrayList<Event> events = new ArrayList<>();
     private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static int SEARCH_CALLED_AUTOCOMPLETE = 0;
+    private static int ADD_CALLED_AUTOCOMPLETE = 1;
+    private int autocompleteCaller;
 
     // The current logged in user handle
     private FirebaseAuth mAuth;
@@ -178,6 +181,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 setCameraOnDeviceLocation(false);
                 return true;
             case R.id.action_search:
+                autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
+                onSearchCalled();
+                return true;
+            case R.id.action_addevent:
+                autocompleteCaller = ADD_CALLED_AUTOCOMPLETE;
                 onSearchCalled();
                 return true;
             case R.id.action_signout:
@@ -232,11 +240,19 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             Log.i("Autocomplete : ", "onActivityResults");
             if (resultCode == AutocompleteActivity.RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i("Autocomplete : ", "Got place : " + place.getName() + " " + place.getLatLng());
-
-                CameraUpdate camUpdate = CameraUpdateFactory.newLatLng(place.getLatLng());
-                mGoogleMap.moveCamera(camUpdate);
+                if (autocompleteCaller == SEARCH_CALLED_AUTOCOMPLETE) {
+                    Place place = Autocomplete.getPlaceFromIntent(data);
+                    Log.i("Autocomplete : ", "Got place : " + place.getName() + " " + place.getLatLng());
+                    CameraUpdate camUpdate = CameraUpdateFactory.newLatLng(place.getLatLng());
+                    mGoogleMap.moveCamera(camUpdate);
+                } else if (autocompleteCaller == ADD_CALLED_AUTOCOMPLETE) {
+                    Place place = Autocomplete.getPlaceFromIntent(data);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("LAT_LNG", place.getLatLng());
+                    Intent intent = new Intent(getActivity(), AddEventActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
 //                Status status = Autocomplete.getStatusFromIntent(data);
                 Autocomplete.getStatusFromIntent(data);
@@ -255,7 +271,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         Intent intent = new Intent(getActivity(), AddEventActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-
     }
 
     //region Map Location
