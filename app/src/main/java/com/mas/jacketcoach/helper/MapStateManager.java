@@ -2,6 +2,7 @@ package com.mas.jacketcoach.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -44,6 +45,10 @@ public class MapStateManager {
     public boolean mapStateIsOutdated() {
         //outdated if application just started or no map available
         double latitude = mapStatePrefs.getFloat(LATITUDE, 0);
+        Log.d("NAVIGATION", "Centered on event is :");
+        if(centeredOnEvent){
+            Log.d("NAVIGATION", "true");
+        }
 
         Boolean outdated = !centeredOnEvent && ((! mapHasalreadyBeenCreated) || (latitude == 0));
         return outdated ;

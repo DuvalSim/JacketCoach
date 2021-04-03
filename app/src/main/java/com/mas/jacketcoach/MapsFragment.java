@@ -86,7 +86,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         //want to receive menu related callbacks
         setHasOptionsMenu(true);
         String apiKey = getString(R.string.google_maps_key);
-        this.getEventsFirebase();
+
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -109,6 +109,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
+        this.getEventsFirebase();
         updateLocationUI();
 
         mGoogleMap.setOnMapLongClickListener(MapsFragment.this);
@@ -121,6 +122,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         } else {
             setCameraOnSavedState();
         }
+
 
     }
 
@@ -154,6 +156,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             @Override
             public void onClick(View view) {
                 autocompleteCaller = ADD_CALLED_AUTOCOMPLETE;
+                Log.d("NAVIGATION", "searching");
                 onSearchCalled();
             }
         });
@@ -194,10 +197,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             case R.id.action_centerOnLocation:
                 setCameraOnDeviceLocation(false);
                 return true;
-            case R.id.action_search:
-                autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
-                onSearchCalled();
-                return true;
+
 
             case R.id.action_signout:
                 signOutUser();
@@ -462,6 +462,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                         }
                         events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
                     }
+                    Log.d("Got events :", events.get(0).toString(), task.getException());
                     addEventsOnMap();
                 }
             }

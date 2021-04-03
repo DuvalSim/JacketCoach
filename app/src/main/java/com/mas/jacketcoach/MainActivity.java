@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 //        Initialize navigation controller
 
         FragmentManager fragmentManager = getSupportFragmentManager();
+
         NavHostFragment navHostFragment = (NavHostFragment) fragmentManager.findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
 
