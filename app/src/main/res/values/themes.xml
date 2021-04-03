@@ -11,5 +11,6 @@
         <item name="colorSecondaryVariant">@color/GT_Color</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>

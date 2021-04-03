@@ -39,6 +39,8 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -64,6 +66,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private ArrayList<Event> events = new ArrayList<>();
     private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static int SEARCH_CALLED_AUTOCOMPLETE = 0;
+    private static int ADD_CALLED_AUTOCOMPLETE = 1;
+    private int autocompleteCaller;
 
     // The current logged in user handle
     private FirebaseAuth mAuth;
@@ -116,6 +121,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         } else {
             setCameraOnSavedState();
         }
+
     }
 
 
@@ -142,6 +148,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        FloatingActionButton fab = view.findViewById(R.id.add_event_circle);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                autocompleteCaller = ADD_CALLED_AUTOCOMPLETE;
+                onSearchCalled();
+            }
+        });
+
     }
 
     @Override
@@ -179,8 +195,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 setCameraOnDeviceLocation(false);
                 return true;
             case R.id.action_search:
+                autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
                 onSearchCalled();
                 return true;
+
             case R.id.action_signout:
                 signOutUser();
                 return true;
@@ -233,11 +251,19 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             Log.i("Autocomplete : ", "onActivityResults");
             if (resultCode == AutocompleteActivity.RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i("Autocomplete : ", "Got place : " + place.getName() + " " + place.getLatLng());
-
-                CameraUpdate camUpdate = CameraUpdateFactory.newLatLng(place.getLatLng());
-                mGoogleMap.moveCamera(camUpdate);
+                if (autocompleteCaller == SEARCH_CALLED_AUTOCOMPLETE) {
+                    Place place = Autocomplete.getPlaceFromIntent(data);
+                    Log.i("Autocomplete : ", "Got place : " + place.getName() + " " + place.getLatLng());
+                    CameraUpdate camUpdate = CameraUpdateFactory.newLatLng(place.getLatLng());
+                    mGoogleMap.moveCamera(camUpdate);
+                } else if (autocompleteCaller == ADD_CALLED_AUTOCOMPLETE) {
+                    Place place = Autocomplete.getPlaceFromIntent(data);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("LAT_LNG", place.getLatLng());
+                    Intent intent = new Intent(getActivity(), AddEventActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
 //                Status status = Autocomplete.getStatusFromIntent(data);
                 Autocomplete.getStatusFromIntent(data);
@@ -256,7 +282,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         Intent intent = new Intent(getActivity(), AddEventActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-
     }
 
     //region Map Location

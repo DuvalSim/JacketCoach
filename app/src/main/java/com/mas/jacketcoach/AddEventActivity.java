@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapFragment;
@@ -35,11 +41,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class AddEventActivity extends AppCompatActivity {
+public class AddEventActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private static String OTHER_SPORT = "Other";
     private EditText nameEditText;
     private EditText sportEditText;
     private EditText date_field;
+    private String sport;
+    private Spinner sportSpinner;
     private LatLng latlng;
     private DatabaseReference mDatabase;
     private FirebaseUser user;
@@ -58,7 +67,7 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Initialize UI elements
         nameEditText = (EditText) findViewById(R.id.name);
-        sportEditText = (EditText) findViewById(R.id.sport);
+        sportEditText = (EditText) findViewById(R.id.other_sport);
         date_field = (EditText)findViewById(R.id.date);
         date_field.setFocusable(false); // disable editing of this field
         date_field.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +76,11 @@ public class AddEventActivity extends AppCompatActivity {
                 chooseDate();
             }
         });
+        sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sports_dropdown, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sportSpinner.setAdapter(adapter);
+        sportSpinner.setOnItemSelectedListener(this);
 
         //Firebase setup
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -108,7 +122,12 @@ public class AddEventActivity extends AppCompatActivity {
     public void addEvent(View view) {
         //Parsing input
         String enteredName = nameEditText.getText().toString();
-        String enteredSport = sportEditText.getText().toString();
+        String enteredSport;
+        if (sport.equals(OTHER_SPORT)) {
+            enteredSport = sportEditText.getText().toString();
+        } else {
+            enteredSport = sport;
+        }
         String enteredDate = date_field.getText().toString();
 
         //Validating input
@@ -169,5 +188,23 @@ public class AddEventActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        sport = parent.getItemAtPosition(position).toString();
+        if (sport.equals(OTHER_SPORT)) {
+            sportEditText.setVisibility(View.VISIBLE);
+        } else {
+            sportEditText.setVisibility(View.INVISIBLE);
+            sportEditText.setText("");
+            InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(sportEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        return;
     }
 }

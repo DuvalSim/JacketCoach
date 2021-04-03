@@ -47,6 +47,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 // IMPLEMENT FOR PARTICIPATE BUTTON
+
             }
         });
 
