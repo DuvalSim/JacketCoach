@@ -31,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText fullNameEditText;
     private EditText registerEmailAddressEditText;
     private EditText registerPasswordEditText;
+    private EditText registerPhoneNumberEditText;
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
@@ -54,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         fullNameEditText = (EditText) findViewById(R.id.fullNameEditText);
         registerEmailAddressEditText = (EditText) findViewById(R.id.registerEmailAddressEditText);
         registerPasswordEditText = (EditText) findViewById(R.id.registerPasswordEditText);
+        registerPhoneNumberEditText = (EditText) findViewById(R.id.registerPhoneNumberEditText);
 
     }
 
@@ -95,6 +97,13 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        String enteredPhoneNumber = registerPhoneNumberEditText.getText().toString();
+
+        if (!Validator.isValidPhoneNumber(enteredPhoneNumber)) {
+            registerPhoneNumberEditText.setError("Invalid Phone Number Entered");
+            return;
+        }
+
         // Sign a new user up with their email and password
         mAuth.createUserWithEmailAndPassword(enteredEmail, enteredPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -115,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, mAuth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
                             // Update the firebase user DB with the user info
-                            User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail);
+                            User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail, enteredPhoneNumber);
                             updateUsersDatabase(currentUser);
 
                             // Create new user session

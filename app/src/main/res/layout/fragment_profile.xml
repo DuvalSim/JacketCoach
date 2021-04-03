@@ -62,6 +62,19 @@
                 android:textSize="18sp"
                 android:textColor="@color/black"/>
 
+            <TextView
+                android:id="@+id/phoneNumberDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:autofillHints="Phone"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                android:textSize="18sp"
+                android:autoLink="phone"
+                android:textColor="@color/black"/>
+
             <com.google.android.material.button.MaterialButton
                 android:theme="@style/BorderedButton"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"

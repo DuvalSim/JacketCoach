@@ -69,6 +69,18 @@
                 android:layout_marginEnd="30dp"
                 android:layout_marginStart="30dp" />
 
+            <EditText
+                android:id="@+id/registerPhoneNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="phone"
+                android:autofillHints="Email"
+                android:hint="Phone Number"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp" />
+
             <!-- https://stackoverflow.com/questions/7690416/android-border-for-button -->
             <com.google.android.material.button.MaterialButton
                 android:theme="@style/BorderedButton"

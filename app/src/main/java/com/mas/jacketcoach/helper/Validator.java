@@ -20,4 +20,9 @@ public class Validator {
     public static boolean isValidText(String target) {
         return !(target.trim().equalsIgnoreCase("")) && (target.length() > 4);
     }
+
+    // TODO: Add more logic, pattern matcher here is not great
+    public static boolean isValidPhoneNumber(String target) {
+        return (!TextUtils.isEmpty(target) && Patterns.PHONE.matcher(target).matches());
+    }
 }

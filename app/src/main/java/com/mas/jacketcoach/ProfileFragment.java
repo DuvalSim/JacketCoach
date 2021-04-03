@@ -46,6 +46,7 @@ public class ProfileFragment extends Fragment {
     private EditText nickNameDisplay;
     private EditText fullNameDisplay;
     private TextView emailDisplay;
+    private TextView phoneNumberDisplay;
     private MaterialButton updateUserInfoButton;
 
 
@@ -116,6 +117,7 @@ public class ProfileFragment extends Fragment {
         nickNameDisplay = (EditText) getView().findViewById(R.id.nickNameDisplay);
         fullNameDisplay = (EditText) getView().findViewById(R.id.fullNameDisplay);
         emailDisplay = (TextView) getView().findViewById(R.id.emailDisplay);
+        phoneNumberDisplay = (TextView) getView().findViewById(R.id.phoneNumberDisplay);
 
         // Register a handler for user information change
         if (mAuth.getCurrentUser() != null) {
@@ -128,6 +130,7 @@ public class ProfileFragment extends Fragment {
                     nickNameDisplay.setText(current.getPlayNickname());
                     fullNameDisplay.setText(current.getFullName());
                     emailDisplay.setText(current.getEmail());
+                    phoneNumberDisplay.setText(current.getPhoneNumber());
                 }
 
                 @Override
