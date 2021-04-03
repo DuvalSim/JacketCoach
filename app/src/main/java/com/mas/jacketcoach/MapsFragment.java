@@ -39,6 +39,8 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -118,6 +120,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         } else {
             setCameraOnSavedState();
         }
+
     }
 
 
@@ -144,6 +147,16 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        FloatingActionButton fab = view.findViewById(R.id.add_event_circle);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                autocompleteCaller = ADD_CALLED_AUTOCOMPLETE;
+                onSearchCalled();
+            }
+        });
+
     }
 
     @Override
@@ -184,10 +197,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
                 onSearchCalled();
                 return true;
-            case R.id.action_addevent:
-                autocompleteCaller = ADD_CALLED_AUTOCOMPLETE;
-                onSearchCalled();
-                return true;
+
             case R.id.action_signout:
                 signOutUser();
                 return true;

@@ -18,11 +18,11 @@
         android:icon="@drawable/ic_location_action"
         android:title="Center on current location"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_addevent"
-        android:icon="@drawable/ic_baseline_add_24"
-        android:title="Add Event"
-        app:showAsAction="always"/>
+<!--    <item-->
+<!--        android:id="@+id/action_addevent"-->
+<!--        android:icon="@drawable/ic_baseline_add_24"-->
+<!--        android:title="Add Event"-->
+<!--        app:showAsAction="always"/>-->
 
 <!--    <item-->
 <!--        android:id="@+id/action_favorite"-->
