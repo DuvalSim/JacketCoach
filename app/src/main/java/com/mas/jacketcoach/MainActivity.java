@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         // DEBUG
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
-            Toast.makeText(this, "Signed in ID: " + mAuth.getCurrentUser().getDisplayName() + " !", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Signed in ID: " + mAuth.getCurrentUser().getDisplayName() + " !", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "DEBUG MODE - Signed In with no actual user", Toast.LENGTH_SHORT).show();
         }

@@ -15,6 +15,11 @@
         android:label="fragment_event"
         tools:layout="@layout/fragment_event" />
     <fragment
+        android:id="@+id/eventTabs_fragment"
+        android:name="com.mas.jacketcoach.EventTabs"
+        android:label="fragment_tabEvent"
+        tools:layout="@layout/fragment_event_tabs"/>
+    <fragment
         android:id="@+id/profile_fragment"
         android:name="com.mas.jacketcoach.ProfileFragment"
         android:label="fragment_profile"

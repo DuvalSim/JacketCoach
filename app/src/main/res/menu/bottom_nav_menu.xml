@@ -10,6 +10,10 @@
         android:id="@+id/event_fragment"
         android:icon="@drawable/menu_event_icon"
         android:title="Events" />
+    <item
+        android:id="@+id/eventTabs_fragment"
+        android:icon="@drawable/menu_event_icon"
+        android:title="Events" />
 
     <item
         android:id="@+id/chat_fragment"
