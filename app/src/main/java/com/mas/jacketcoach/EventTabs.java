@@ -33,6 +33,7 @@ public class EventTabs extends Fragment {
     private String mParam2;
 
     private static final int NUM_PAGES = 3;
+    private static final String[] tabTitles = {"Around me", "Signed in", "My events"};
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
 
@@ -86,7 +87,7 @@ public class EventTabs extends Fragment {
         viewPager.setAdapter(pagerAdapter);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText("OBJECT " + (position + 1))
+                (tab, position) -> tab.setText(tabTitles[position])
         ).attach();
     }
 
@@ -97,7 +98,15 @@ public class EventTabs extends Fragment {
 
         @Override
         public Fragment createFragment(int position) {
-            return new EventFragment();
+            switch (position){
+                case 0:
+                    return new AllEventsFragment();
+                case 1:
+                    return new SignedInEventsFragment();
+                case 2:
+                    return new MyEventsFragment();
+            }
+            return new Fragment();
         }
 
         @Override
