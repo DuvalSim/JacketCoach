@@ -4,6 +4,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -27,6 +29,20 @@ public class Event {
         this.latitude = latitude;
         this.longitude = longitude;
         this.players = players;
+    }
+    public static Event fromDataSnapshot(DataSnapshot eventSnapshot){
+        int id = Integer.parseInt(eventSnapshot.child("id").getValue().toString());
+        String idOrganizer = eventSnapshot.child("idOrganizer").getValue().toString();
+        String name = eventSnapshot.child("name").getValue().toString();
+        String sport = eventSnapshot.child("sport").getValue().toString();
+        String date = eventSnapshot.child("date").getValue().toString();
+        double latitude = Double.parseDouble(eventSnapshot.child("latitude").getValue().toString());
+        double longitude = Double.parseDouble(eventSnapshot.child("longitude").getValue().toString());
+        ArrayList<String> players = new ArrayList<>();
+        for (DataSnapshot player : eventSnapshot.getChildren()) {
+            players.add(player.getValue().toString());
+        }
+        return new Event(id, idOrganizer, name, sport, date, latitude, longitude, players);
     }
 
     public int getId() {
@@ -126,4 +142,6 @@ public class Event {
     public int hashCode() {
         return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players);
     }
+
+
 }

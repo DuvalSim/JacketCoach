@@ -1,4 +1,4 @@
-package com.mas.jacketcoach;
+    package com.mas.jacketcoach;
 
 import android.Manifest;
 import android.content.Intent;
@@ -442,10 +442,12 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
     public void getEventsFirebase() {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("events");
+        Log.d("NAVIGATION", "getting events");
         mDatabase.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
+                    Log.d("NAVIGATION", "error",task.getException());
                     Log.e("firebase", "Error getting data", task.getException());
                 } else {
                     for (DataSnapshot event : task.getResult().getChildren()) {
@@ -462,6 +464,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                         }
                         events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
                     }
+                    Log.d("NAVIGATION", "got events");
                     Log.d("Got events :", events.get(0).toString(), task.getException());
                     addEventsOnMap();
                 }

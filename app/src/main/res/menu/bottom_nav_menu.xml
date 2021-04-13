@@ -5,9 +5,8 @@
         android:id="@+id/map_fragment"
         android:icon="@drawable/menu_location_icon"
         android:title="@string/title_activity_maps" />
-
     <item
-        android:id="@+id/event_fragment"
+        android:id="@+id/eventTabs_fragment"
         android:icon="@drawable/menu_event_icon"
         android:title="Events" />
 
