@@ -1,5 +1,14 @@
 package com.mas.jacketcoach;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.mas.jacketcoach.model.Event;
 
 import java.util.ArrayList;
@@ -7,8 +16,7 @@ import java.util.ArrayList;
 public class AllEventsFragment extends BaseEventFragment {
 
     @Override
-    public void populateEventArray() {
-        eventList.add(new Event(1, "Orinize", "Name All", "Sport All", "Date",123,123,new ArrayList<String>()));
-        eventList.add(new Event(1, "Orinize", "Name 2", "Sport 2", "Date",123,123,new ArrayList<String>()));
+    protected Query getEventQuery() {
+        return mDatabase.child("events");
     }
 }
