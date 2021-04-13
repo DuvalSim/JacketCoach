@@ -11,10 +11,11 @@
         android:icon="@drawable/menu_event_icon"
         android:title="Events" />
 
-    <item
-        android:id="@+id/chat_fragment"
-        android:icon="@drawable/menu_chat_icon"
-        android:title="@string/title_chat" />
+    <!-- Chat fragment hidden for Sprint 5 as it is not a core functionality for now -->
+<!--    <item-->
+<!--        android:id="@+id/chat_fragment"-->
+<!--        android:icon="@drawable/menu_chat_icon"-->
+<!--        android:title="@string/title_chat" />-->
     <item
         android:id="@+id/profile_fragment"
         android:icon="@drawable/menu_profile_icon"
