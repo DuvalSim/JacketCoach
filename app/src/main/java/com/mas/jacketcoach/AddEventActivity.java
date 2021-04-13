@@ -1,8 +1,5 @@
 package com.mas.jacketcoach;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -19,10 +16,11 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.MapFragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,8 +32,6 @@ import com.mas.jacketcoach.model.Event;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -180,6 +176,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
                     }
                 }, year, month, day); // set date picker to current date
 
+        datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000); // Added by Farzam to disable past dates
         datePicker.show();
 
         datePicker.setOnCancelListener(new DialogInterface.OnCancelListener() {
