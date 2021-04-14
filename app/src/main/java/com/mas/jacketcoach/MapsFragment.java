@@ -1,62 +1,61 @@
     package com.mas.jacketcoach;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+    import android.Manifest;
+    import android.content.Intent;
+    import android.content.pm.PackageManager;
+    import android.location.Location;
+    import android.os.Bundle;
+    import android.util.Log;
+    import android.view.LayoutInflater;
+    import android.view.MenuItem;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.appcompat.widget.Toolbar;
+    import androidx.core.app.ActivityCompat;
+    import androidx.core.content.ContextCompat;
+    import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.mas.jacketcoach.helper.MapStateManager;
-import com.mas.jacketcoach.model.Event;
-import com.mas.jacketcoach.model.MarkerInfo;
+    import com.google.android.gms.common.api.Status;
+    import com.google.android.gms.location.FusedLocationProviderClient;
+    import com.google.android.gms.location.LocationServices;
+    import com.google.android.gms.maps.CameraUpdate;
+    import com.google.android.gms.maps.CameraUpdateFactory;
+    import com.google.android.gms.maps.GoogleMap;
+    import com.google.android.gms.maps.OnMapReadyCallback;
+    import com.google.android.gms.maps.SupportMapFragment;
+    import com.google.android.gms.maps.model.CameraPosition;
+    import com.google.android.gms.maps.model.LatLng;
+    import com.google.android.gms.maps.model.Marker;
+    import com.google.android.gms.maps.model.MarkerOptions;
+    import com.google.android.gms.tasks.OnCompleteListener;
+    import com.google.android.gms.tasks.Task;
+    import com.google.android.libraries.places.api.Places;
+    import com.google.android.libraries.places.api.model.Place;
+    import com.google.android.libraries.places.api.net.PlacesClient;
+    import com.google.android.libraries.places.widget.Autocomplete;
+    import com.google.android.libraries.places.widget.AutocompleteActivity;
+    import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+    import com.google.android.material.floatingactionbutton.FloatingActionButton;
+    import com.google.firebase.auth.FirebaseAuth;
+    import com.google.firebase.database.DataSnapshot;
+    import com.google.firebase.database.DatabaseReference;
+    import com.google.firebase.database.FirebaseDatabase;
+    import com.mas.jacketcoach.helper.MapStateManager;
+    import com.mas.jacketcoach.model.Event;
+    import com.mas.jacketcoach.model.MarkerInfo;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+    import java.text.ParseException;
+    import java.text.SimpleDateFormat;
+    import java.util.ArrayList;
+    import java.util.Arrays;
+    import java.util.Date;
+    import java.util.HashMap;
+    import java.util.List;
+    import java.util.Map;
 
 
 public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener, GoogleMap.OnMapLongClickListener {
@@ -465,7 +464,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                         events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
                     }
                     Log.d("NAVIGATION", "got events");
-                    Log.d("Got events :", events.get(0).toString(), task.getException());
+                    if (events != null && events.size() > 0) {
+                        Log.d("Got events :", events.get(0).toString(), task.getException());
+                    }
                     addEventsOnMap();
                 }
             }
