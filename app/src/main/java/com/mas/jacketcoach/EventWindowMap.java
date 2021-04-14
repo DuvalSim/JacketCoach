@@ -16,6 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -243,6 +248,15 @@ public class EventWindowMap extends BottomSheetDialogFragment {
 
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                // Check if event has signed-up participants
+                                // size will be at least 1 since the host itself is included here
+                                if (eventInfo.getPlayers().size() > 1) {
+                                    // TODO: Think and discuss the approach here
+                                    Toast.makeText(getActivity(), "Error: Can't cancel events that have signed-up participants. For now, contact participants individually.", Toast.LENGTH_SHORT).show();
+                                    dismiss();
+                                    return;
+                                }
+
                                 cancelEventFromDB();
 
                                 // Update the User table
@@ -281,25 +295,25 @@ public class EventWindowMap extends BottomSheetDialogFragment {
 
     // Helper method for reloading the fragment so marker information get updated
     private void reloadFragment() {
-
-
-//        LatLng eventLocation = new LatLng(eventInfo.getLatitude(), eventInfo.getLongitude());
-//        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-//                .position(eventLocation)
-//                .title(eventInfo.getName()));
-//        marker.remove();
-//        mGoogleMap.setOnInfoWindowClickListener();
-
         // Close this window
         dismiss();
 
-//        Fragment currentFragment =  getActivity().getSupportFragmentManager().findFragmentById(R.id.mapFragmentConstraintContainer);
-//        if (currentFragment != null) {
-//            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.detach(currentFragment);
-//            fragmentTransaction.attach(currentFragment);
-//            fragmentTransaction.commit();
-//        }
+        SupportMapFragment fragment = ((SupportMapFragment) getActivity().getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragmentConstraintContainer));
+        if (fragment != null) {
+            fragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    LatLng eventLocation = new LatLng(eventInfo.getLatitude(), eventInfo.getLongitude());
+                    Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                            .position(eventLocation)
+                            .title(eventInfo.getName()));
+                    marker.remove();
+                }
+            });
+        } else {
+            Toast.makeText(getActivity(), "Error: Can't reload map. Manually go to a different page and come back to the maps page.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Helper method for removing an event node from the DB
