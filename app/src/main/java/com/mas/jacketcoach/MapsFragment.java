@@ -187,7 +187,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 // User chose the "Settings" item, show the app settings UI...
                 Log.d("NAVIGATION", "setting");
                 return true;
-
+            case R.id.action_search:
+                autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
+                onSearchCalled();
+                return true;
                 // Hidden for Sprint 4
 //            case R.id.action_favorite:
 //                // User chose the "Favorite" action, mark the current item
