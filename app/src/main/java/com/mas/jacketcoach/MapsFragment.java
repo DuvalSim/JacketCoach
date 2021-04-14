@@ -46,7 +46,6 @@
     import com.google.firebase.database.FirebaseDatabase;
     import com.mas.jacketcoach.helper.MapStateManager;
     import com.mas.jacketcoach.model.Event;
-    import com.mas.jacketcoach.model.MarkerInfo;
 
     import java.text.ParseException;
     import java.text.SimpleDateFormat;
@@ -63,7 +62,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private GoogleMap mGoogleMap;
     private DatabaseReference mDatabase;
     private ArrayList<Event> events = new ArrayList<>();
-    private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
+    private Map<Marker, Event> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static int SEARCH_CALLED_AUTOCOMPLETE = 0;
     private static int ADD_CALLED_AUTOCOMPLETE = 1;
@@ -173,7 +172,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        MarkerInfo markerInfo = mMarkerMap.get(marker);
+        Event markerInfo = mMarkerMap.get(marker);
         EventWindowMap event = new EventWindowMap(markerInfo);
         event.show(getParentFragmentManager(), "eventMap");
     }
@@ -485,8 +484,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                     Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                             .position(eventLocation)
                             .title(events.get(i).getName()));
-                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
-                    mMarkerMap.put(marker, markerInfo);
+//                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
+                    mMarkerMap.put(marker, events.get((i)));
                     mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
                 }
             } catch (ParseException e) {
