@@ -18,17 +18,22 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.helper.MapStateManager;
 import com.mas.jacketcoach.helper.Validator;
 import com.mas.jacketcoach.model.Event;
+import com.mas.jacketcoach.model.User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -159,6 +164,23 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
 
         Event event = new Event(eventFirebasePushId, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players);
         mDatabase.child("events").child(eventFirebasePushId).setValue(event);
+
+        // Update the User table
+        DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(user.getUid());
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Add this event id to the user assigned event list --> NOTE: Host vs Participant will be based on eventId vs organizerId
+                User participant = snapshot.getValue(User.class);
+                participant.getUserEvents().add(eventFirebasePushId);
+                userRef.setValue(participant);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "Error getting host info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
         Toast.makeText(this, "Event Created!", Toast.LENGTH_SHORT);
         MapStateManager mapStateManager = new MapStateManager(this.getApplicationContext());

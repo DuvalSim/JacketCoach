@@ -117,6 +117,23 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                                     eventInfo.getPlayers().remove(mAuth.getCurrentUser().getUid());
                                     updateEventsPlayerInDB();
                                     buttonParticipate.setText(R.string.participate);
+
+                                    // Update the User table
+                                    DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(mAuth.getCurrentUser().getUid());
+                                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            // Remove this event id to the user assigned event list
+                                            User participant = snapshot.getValue(User.class);
+                                            participant.getUserEvents().remove(eventInfo.getId());
+                                            userRef.setValue(participant);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(getActivity(), "Error getting participant info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                 }
                             })
 
@@ -126,8 +143,29 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                             .show();
                 } else {
                     // New participant
+
+                    // Update the Event table
                     eventInfo.getPlayers().add(mAuth.getCurrentUser().getUid());
                     updateEventsPlayerInDB();
+
+                    // Update the User table
+                    DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(mAuth.getCurrentUser().getUid());
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            // Add this event id to the user assigned event list
+                            User participant = snapshot.getValue(User.class);
+                            participant.getUserEvents().add(eventInfo.getId());
+                            userRef.setValue(participant);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getActivity(), "Error getting participant info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    // UI Changes
                     buttonParticipate.setText(R.string.opt_out);
                 }
             }
@@ -206,6 +244,23 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 cancelEventFromDB();
+
+                                // Update the User table
+                                DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(mAuth.getCurrentUser().getUid());
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        // Remove this event id to the user assigned event list
+                                        User participant = snapshot.getValue(User.class);
+                                        participant.getUserEvents().remove(eventInfo.getId());
+                                        userRef.setValue(participant);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(getActivity(), "Error getting host info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
                                 // Remove this marker from MapsFragment
                                 reloadFragment();

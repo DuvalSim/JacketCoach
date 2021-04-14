@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.mas.jacketcoach.helper.Validator;
 import com.mas.jacketcoach.model.User;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -121,7 +122,12 @@ public class RegisterActivity extends AppCompatActivity {
                             mUser.updateProfile(profileUpdates);
 
                             // Update the firebase user DB with the user info
-                            User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail, enteredPhoneNumber);
+                            ArrayList<String> userEventsIds = new ArrayList<>();
+                            // NOTE: Upon user registration users are not assigned to any events. Since this will cause firebase not to show this
+                            // field, we add a placeholder event for all users. THIS IS FOR INTERNAL USAGE ONLY and will help managing participants easier.
+                            userEventsIds.add("DB-INTERNAL-Placeholder"); // this string is safe as firebase push IDs can never be the same as this
+
+                            User currentUser = new User(mUser.getUid(), enteredNickname, enteredFirstName, enteredEmail, enteredPhoneNumber, userEventsIds);
                             updateUsersDatabase(currentUser);
 
                             // Create new user session

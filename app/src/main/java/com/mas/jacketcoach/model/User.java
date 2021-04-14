@@ -10,7 +10,7 @@ public class User {
     private String phoneNumber;
 
     // This list is used for both hosting and participating events (distinguished by OrganizerId)
-    private ArrayList<Event> userEvents;
+    private ArrayList<String> userEventsIds;
 
     // Empty constructor required for reading database into an object using ValueEventListener
     public User() {
@@ -18,19 +18,13 @@ public class User {
     }
 
     // Model class for a firebase user
-    public User(String uid, String playNickname, String fullName, String email, String phoneNumber) {
+    public User(String uid, String playNickname, String fullName, String email, String phoneNumber, ArrayList<String> userEventsIds) {
         this.uid = uid;
         this.playNickname = playNickname;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-
-        // Initialize an empty events list
-        userEvents = new ArrayList<>();
-
-        // Uncomment this to make this field show up for a user in Firebase DB **UPON REGISTERING**
-//        Event test = new Event(1, "Test", "test", "test", "test", 1.0, 1.0, null);
-//        userEvents.add(test);
+        this.userEventsIds = userEventsIds;
     }
 
     public String getUid() {
@@ -73,11 +67,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public ArrayList<Event> getUserEvents() {
-        return userEvents;
+    public ArrayList<String> getUserEvents() {
+        return userEventsIds;
     }
 
-    public void setUserEvents(ArrayList<Event> userEvents) {
-        this.userEvents = userEvents;
+    public void setUserEvents(ArrayList<String> userEvents) {
+        this.userEventsIds = userEvents;
     }
 }
