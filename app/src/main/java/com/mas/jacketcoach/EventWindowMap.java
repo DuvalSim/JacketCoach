@@ -250,36 +250,53 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 // Check if event has signed-up participants
                                 // size will be at least 1 since the host itself is included here
-                                if (eventInfo.getPlayers().size() > 1) {
-                                    // TODO: Think and discuss the approach here
-                                    Toast.makeText(getActivity(), "Error: Can't cancel events that have signed-up participants. For now, contact participants individually.", Toast.LENGTH_SHORT).show();
-                                    dismiss();
-                                    return;
-                                }
-
-                                cancelEventFromDB();
-
-                                // Update the User table
-                                DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(mAuth.getCurrentUser().getUid());
-                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                // Need to perform this ONLINE DB check since the object passed in might not be current
+                                DatabaseReference eventRef = mDatabase.child(getString(R.string.events_table_key)).child(eventInfo.getId());
+                                eventRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         // Remove this event id to the user assigned event list
-                                        User participant = snapshot.getValue(User.class);
-                                        participant.getUserEvents().remove(eventInfo.getId());
-                                        userRef.setValue(participant);
+                                        Event onlineEvent = snapshot.getValue(Event.class);
+                                        if (onlineEvent == null) {
+                                            Toast.makeText(getActivity(), "Error getting online event info", Toast.LENGTH_SHORT).show();
+                                            dismiss();
+                                        }
+
+                                        if (onlineEvent.getPlayers().size() > 1) {
+                                            // TODO: Think and discuss the approach here
+                                            Toast.makeText(getActivity(), "Error: Can't cancel events that have signed-up participants. For now, contact participants individually.", Toast.LENGTH_SHORT).show();
+                                            dismiss();
+                                        } else if (onlineEvent.getPlayers().size() == 1 && onlineEvent.getPlayers().contains(mAuth.getCurrentUser().getUid())) {
+                                            cancelEventFromDB();
+                                            Toast.makeText(getActivity(), "Event cancelled", Toast.LENGTH_SHORT).show();
+
+                                            // Update the User table
+                                            DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(mAuth.getCurrentUser().getUid());
+                                            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    // Remove this event id to the user assigned event list
+                                                    User participant = snapshot.getValue(User.class);
+                                                    participant.getUserEvents().remove(eventInfo.getId());
+                                                    userRef.setValue(participant);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Toast.makeText(getActivity(), "Error getting host info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+                                            // Remove this marker from MapsFragment
+                                            reloadFragment();
+                                        }
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(getActivity(), "Error getting host info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "Error getting event info: " + error.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 });
-
-                                // Remove this marker from MapsFragment
-                                reloadFragment();
-
-                                Toast.makeText(getActivity(), "Event cancelled", Toast.LENGTH_SHORT).show();
                             }
                         })
 
@@ -298,6 +315,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
         // Close this window
         dismiss();
 
+        // TODO: Fix this
         SupportMapFragment fragment = ((SupportMapFragment) getActivity().getSupportFragmentManager()
                 .findFragmentById(R.id.mapFragmentConstraintContainer));
         if (fragment != null) {

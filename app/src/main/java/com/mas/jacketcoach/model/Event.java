@@ -15,6 +15,11 @@ public class Event {
     private double longitude;
     private ArrayList<String> players;
 
+    // Empty constructor required for reading database into an object using ValueEventListener
+    public Event() {
+
+    }
+
     public Event(String id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players) {
         this.id = id;
         this.idOrganizer = idOrganizer;
