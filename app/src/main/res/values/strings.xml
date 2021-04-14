@@ -35,4 +35,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="participate">Participate</string>
     <string name="opt_out">Opt-out</string>
+    <string name="user_phoneNumber_key">phoneNumber</string>
+    <string name="users_table_key">Users</string>
+    <string name="events_table_key">events</string>
+    <string name="user_playNickname_key">playNickname</string>
+    <string name="user_fullName_key">fullName</string>
+    <string name="user_email_key">email</string>
+    <string name="events_players_key">players</string>
 </resources>

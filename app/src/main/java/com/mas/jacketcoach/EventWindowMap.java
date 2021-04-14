@@ -3,7 +3,9 @@ package com.mas.jacketcoach;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +15,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
+import com.mas.jacketcoach.model.User;
 
 public class EventWindowMap extends BottomSheetDialogFragment {
+    final String TAG = "EventWindowMap-log-tag";
+    private View view;
+
     private MaterialButton buttonParticipate;
     private MaterialButton buttonContact;
     private MaterialButton buttonShare;
@@ -33,14 +43,17 @@ public class EventWindowMap extends BottomSheetDialogFragment {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
-    public EventWindowMap(Event eventInfo) {
+    private GoogleMap mGoogleMap;
+
+    public EventWindowMap(Event eventInfo, GoogleMap mGoogleMap) {
         this.eventInfo = eventInfo;
+        this.mGoogleMap = mGoogleMap;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.event_windowmap, container, false);
+        view = inflater.inflate(R.layout.event_windowmap, container, false);
 
         buttonParticipate = view.findViewById(R.id.button_participate);
         buttonContact = view.findViewById(R.id.button_contact);
@@ -100,7 +113,9 @@ public class EventWindowMap extends BottomSheetDialogFragment {
 
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    optOutUserFromEvent();
+                                    // delete the user from the players list of this event
+                                    eventInfo.getPlayers().remove(mAuth.getCurrentUser().getUid());
+                                    updateEventsPlayerInDB();
                                     buttonParticipate.setText(R.string.participate);
                                 }
                             })
@@ -112,10 +127,9 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                 } else {
                     // New participant
                     eventInfo.getPlayers().add(mAuth.getCurrentUser().getUid());
-                    updateEventsDB();
+                    updateEventsPlayerInDB();
                     buttonParticipate.setText(R.string.opt_out);
                 }
-
             }
         });
 
@@ -127,17 +141,54 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                     return;
                 }
 
+                // Get host information
+                // Note: Host = Organizer
+
+                DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(eventInfo.getIdOrganizer());
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User organizer = snapshot.getValue(User.class);
+                        String hostFullName = organizer.getFullName();
+                        String hostNickName = organizer.getPlayNickname();
+                        String hostEmail = organizer.getEmail();
+                        String hostPhoneNumber = organizer.getPhoneNumber();
+
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("Organizer Info")
+                                .setMessage(Html.fromHtml("<b>Name:</b> " + hostFullName + "<br>" +
+                                        "<b>Play Nickname:</b> " + hostNickName + "<br>" +
+                                        "<b>Email:</b> " + hostEmail + "<br>" +
+                                        "<b>Phone number:</b> " + hostPhoneNumber))
+
+                                .setPositiveButton("Call Organizer", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Uri number = Uri.parse("tel:"+hostPhoneNumber);
+                                        Intent callIntent = new Intent(Intent.ACTION_DIAL, number);
+                                        startActivity(callIntent);
+                                    }
+                                })
+
+                                // A null listener allows the button to dismiss the dialog and take no further action.
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_menu_info_details)
+                                .show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getActivity(), "Error getting organizer info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
         buttonShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
+                Toast.makeText(getActivity(), "To-Implement: Share via facebook, calendar invite, etc!", Toast.LENGTH_SHORT).show();
             }
         });
-
 
         buttonCancelEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,21 +198,64 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                     Toast.makeText(getActivity(), "Development Error: Only hosts can cancel their created events", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Event Cancellation")
+                        .setMessage("Are you sure you want to cancel this event? This action is irreversible.")
+
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                cancelEventFromDB();
+
+                                // Remove this marker from MapsFragment
+                                reloadFragment();
+
+                                Toast.makeText(getActivity(), "Event cancelled", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
 
         return view;
     }
 
-    // Helper method for opting-out a user from participating in an event
-    private void optOutUserFromEvent() {
-        // delete the user from the players list of this event
-        eventInfo.getPlayers().remove(mAuth.getCurrentUser().getUid());
-        updateEventsDB();
+    // Helper method for reloading the fragment so marker information get updated
+    private void reloadFragment() {
+
+
+//        LatLng eventLocation = new LatLng(eventInfo.getLatitude(), eventInfo.getLongitude());
+//        Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+//                .position(eventLocation)
+//                .title(eventInfo.getName()));
+//        marker.remove();
+//        mGoogleMap.setOnInfoWindowClickListener();
+
+        // Close this window
+        dismiss();
+
+//        Fragment currentFragment =  getActivity().getSupportFragmentManager().findFragmentById(R.id.mapFragmentConstraintContainer);
+//        if (currentFragment != null) {
+//            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction.detach(currentFragment);
+//            fragmentTransaction.attach(currentFragment);
+//            fragmentTransaction.commit();
+//        }
     }
 
-    private void updateEventsDB() {
-//        DatabaseReference newRef = mDatabase.child("events").push();
-//        newRef.setValue(eventInfo);
+    // Helper method for removing an event node from the DB
+    private void cancelEventFromDB() {
+        DatabaseReference eventRef = mDatabase.child(getString(R.string.events_table_key)).child(eventInfo.getId());
+        eventRef.removeValue();
+    }
+
+    // Helper method for updating the Players node for adding/removing participants
+    private void updateEventsPlayerInDB() {
+        DatabaseReference eventRef = mDatabase.child(getString(R.string.events_table_key)).child(eventInfo.getId()).child(getString(R.string.events_players_key));
+        eventRef.setValue(eventInfo.getPlayers());
     }
 }

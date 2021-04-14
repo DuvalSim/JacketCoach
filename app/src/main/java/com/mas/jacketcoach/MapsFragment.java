@@ -173,7 +173,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     @Override
     public void onInfoWindowClick(Marker marker) {
         Event markerInfo = mMarkerMap.get(marker);
-        EventWindowMap event = new EventWindowMap(markerInfo);
+        EventWindowMap event = new EventWindowMap(markerInfo, mGoogleMap);
         event.show(getParentFragmentManager(), "eventMap");
     }
 
@@ -452,7 +452,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                     Log.e("firebase", "Error getting data", task.getException());
                 } else {
                     for (DataSnapshot event : task.getResult().getChildren()) {
-                        int id = Integer.parseInt(event.child("id").getValue().toString());
+                        String id = event.child("id").getValue().toString();
                         String idOrganizer = event.child("idOrganizer").getValue().toString();
                         String name = event.child("name").getValue().toString();
                         String sport = event.child("sport").getValue().toString();
@@ -460,7 +460,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                         double latitude = Double.parseDouble(event.child("latitude").getValue().toString());
                         double longitude = Double.parseDouble(event.child("longitude").getValue().toString());
                         ArrayList<String> players = new ArrayList<>();
-                        for (DataSnapshot player : event.getChildren()) {
+                        for (DataSnapshot player : event.child("players").getChildren()) {
                             players.add(player.getValue().toString());
                         }
                         events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
