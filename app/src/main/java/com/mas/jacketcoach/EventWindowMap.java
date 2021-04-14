@@ -1,5 +1,7 @@
 package com.mas.jacketcoach;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +16,8 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.mas.jacketcoach.model.Event;
 
 public class EventWindowMap extends BottomSheetDialogFragment {
@@ -24,12 +28,13 @@ public class EventWindowMap extends BottomSheetDialogFragment {
     private TextView textEventName;
     private TextView textEventSport;
     private TextView textEventDate;
-    private Event markerInfos;
+    private Event eventInfo;
 
+    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
-    public EventWindowMap(Event markerInfos) {
-        this.markerInfos = markerInfos;
+    public EventWindowMap(Event eventInfo) {
+        this.eventInfo = eventInfo;
     }
 
     @Nullable
@@ -45,12 +50,14 @@ public class EventWindowMap extends BottomSheetDialogFragment {
         textEventSport = view.findViewById(R.id.text_event_sport);
         textEventDate = view.findViewById(R.id.text_event_date);
 
-        textEventName.setText(markerInfos.getName());
-        textEventSport.setText(markerInfos.getSport());
-        textEventDate.setText(markerInfos.getDate());
+        textEventName.setText(eventInfo.getName());
+        textEventSport.setText(eventInfo.getSport());
+        textEventDate.setText(eventInfo.getDate());
 
         // Initialize Firebase handles
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
 
         // Bullet-proof
         if (mAuth.getCurrentUser() == null) {
@@ -63,7 +70,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
         }
 
         // If user is the host, hide the participate button
-        if (mAuth.getCurrentUser().getUid().equals(markerInfos.getIdOrganizer())) {
+        if (mAuth.getCurrentUser().getUid().equals(eventInfo.getIdOrganizer())) {
             buttonParticipate.setVisibility(View.GONE);
             buttonContact.setVisibility(View.GONE);
 
@@ -72,23 +79,50 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             buttonCancelEvent.setVisibility(View.GONE);
         }
 
+        // Check if current user is already a participant of this event
+        if (eventInfo.getPlayers().contains(mAuth.getCurrentUser().getUid())) {
+            buttonParticipate.setText(R.string.opt_out);
+        }
+
         buttonParticipate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // This check is just added in case the check before
-                if (mAuth.getCurrentUser().getUid().equals(markerInfos.getIdOrganizer())) {
+                // Future-dev bullet-proofing
+                if (mAuth.getCurrentUser().getUid().equals(eventInfo.getIdOrganizer())) {
                     Toast.makeText(getActivity(), "Development Error: Host should not select participate button.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                buttonParticipate.setText("Opt-out");
+                if (eventInfo.getPlayers().contains(mAuth.getCurrentUser().getUid())) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Event Opt-out")
+                            .setMessage("Are you sure you want to opt-out of this event?")
+
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    optOutUserFromEvent();
+                                    buttonParticipate.setText(R.string.participate);
+                                }
+                            })
+
+                            // A null listener allows the button to dismiss the dialog and take no further action.
+                            .setNegativeButton(android.R.string.no, null)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                } else {
+                    // New participant
+                    eventInfo.getPlayers().add(mAuth.getCurrentUser().getUid());
+                    updateEventsDB();
+                    buttonParticipate.setText(R.string.opt_out);
+                }
+
             }
         });
 
         buttonContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mAuth.getCurrentUser().getUid().equals(markerInfos.getIdOrganizer())) {
+                if (mAuth.getCurrentUser().getUid().equals(eventInfo.getIdOrganizer())) {
                     Toast.makeText(getActivity(), "Development Error: Host should not select contact organizer button.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -104,6 +138,30 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             }
         });
 
+
+        buttonCancelEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Future-dev bullet-proofing
+                if (!mAuth.getCurrentUser().getUid().equals(eventInfo.getIdOrganizer())) {
+                    Toast.makeText(getActivity(), "Development Error: Only hosts can cancel their created events", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
+
         return view;
+    }
+
+    // Helper method for opting-out a user from participating in an event
+    private void optOutUserFromEvent() {
+        // delete the user from the players list of this event
+        eventInfo.getPlayers().remove(mAuth.getCurrentUser().getUid());
+        updateEventsDB();
+    }
+
+    private void updateEventsDB() {
+//        DatabaseReference newRef = mDatabase.child("events").push();
+//        newRef.setValue(eventInfo);
     }
 }

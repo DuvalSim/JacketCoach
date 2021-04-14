@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             android:textSize="14sp"
             android:textColor="@color/GT_Color"
-            android:text="Participate"
+            android:text="@string/participate"
             android:theme="@style/BorderedButton"
             app:backgroundTint="@color/GT_Color_Navy"
             app:cornerRadius="10dp"
