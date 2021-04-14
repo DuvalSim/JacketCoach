@@ -1,62 +1,60 @@
     package com.mas.jacketcoach;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+    import android.Manifest;
+    import android.content.Intent;
+    import android.content.pm.PackageManager;
+    import android.location.Location;
+    import android.os.Bundle;
+    import android.util.Log;
+    import android.view.LayoutInflater;
+    import android.view.MenuItem;
+    import android.view.View;
+    import android.view.ViewGroup;
+    import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+    import androidx.annotation.NonNull;
+    import androidx.annotation.Nullable;
+    import androidx.appcompat.widget.Toolbar;
+    import androidx.core.app.ActivityCompat;
+    import androidx.core.content.ContextCompat;
+    import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.mas.jacketcoach.helper.MapStateManager;
-import com.mas.jacketcoach.model.Event;
-import com.mas.jacketcoach.model.MarkerInfo;
+    import com.google.android.gms.common.api.Status;
+    import com.google.android.gms.location.FusedLocationProviderClient;
+    import com.google.android.gms.location.LocationServices;
+    import com.google.android.gms.maps.CameraUpdate;
+    import com.google.android.gms.maps.CameraUpdateFactory;
+    import com.google.android.gms.maps.GoogleMap;
+    import com.google.android.gms.maps.OnMapReadyCallback;
+    import com.google.android.gms.maps.SupportMapFragment;
+    import com.google.android.gms.maps.model.CameraPosition;
+    import com.google.android.gms.maps.model.LatLng;
+    import com.google.android.gms.maps.model.Marker;
+    import com.google.android.gms.maps.model.MarkerOptions;
+    import com.google.android.gms.tasks.OnCompleteListener;
+    import com.google.android.gms.tasks.Task;
+    import com.google.android.libraries.places.api.Places;
+    import com.google.android.libraries.places.api.model.Place;
+    import com.google.android.libraries.places.api.net.PlacesClient;
+    import com.google.android.libraries.places.widget.Autocomplete;
+    import com.google.android.libraries.places.widget.AutocompleteActivity;
+    import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+    import com.google.android.material.floatingactionbutton.FloatingActionButton;
+    import com.google.firebase.auth.FirebaseAuth;
+    import com.google.firebase.database.DataSnapshot;
+    import com.google.firebase.database.DatabaseReference;
+    import com.google.firebase.database.FirebaseDatabase;
+    import com.mas.jacketcoach.helper.MapStateManager;
+    import com.mas.jacketcoach.model.Event;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+    import java.text.ParseException;
+    import java.text.SimpleDateFormat;
+    import java.util.ArrayList;
+    import java.util.Arrays;
+    import java.util.Date;
+    import java.util.HashMap;
+    import java.util.List;
+    import java.util.Map;
 
 
 public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback, Toolbar.OnMenuItemClickListener, GoogleMap.OnMapLongClickListener {
@@ -64,7 +62,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     private GoogleMap mGoogleMap;
     private DatabaseReference mDatabase;
     private ArrayList<Event> events = new ArrayList<>();
-    private Map<Marker, MarkerInfo> mMarkerMap = new HashMap<>();
+    private Map<Marker, Event> mMarkerMap = new HashMap<>();
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static int SEARCH_CALLED_AUTOCOMPLETE = 0;
     private static int ADD_CALLED_AUTOCOMPLETE = 1;
@@ -174,7 +172,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        MarkerInfo markerInfo = mMarkerMap.get(marker);
+        Event markerInfo = mMarkerMap.get(marker);
         EventWindowMap event = new EventWindowMap(markerInfo);
         event.show(getParentFragmentManager(), "eventMap");
     }
@@ -468,7 +466,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                         events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
                     }
                     Log.d("NAVIGATION", "got events");
-                    Log.d("Got events :", events.get(0).toString(), task.getException());
+                    if (events != null && events.size() > 0) {
+                        Log.d("Got events :", events.get(0).toString(), task.getException());
+                    }
                     addEventsOnMap();
                 }
             }
@@ -482,12 +482,13 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 Date date = format.parse(events.get(i).getDate());
+                // TODO: Change the next line so events created today will show up
                 if (date.after(new Date())) {
                     Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                             .position(eventLocation)
                             .title(events.get(i).getName()));
-                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
-                    mMarkerMap.put(marker, markerInfo);
+//                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
+                    mMarkerMap.put(marker, events.get((i)));
                     mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
                 }
             } catch (ParseException e) {

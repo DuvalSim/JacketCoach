@@ -1,7 +1,8 @@
 package com.mas.jacketcoach.model;
 
-import java.util.Date;
+// NOTE: CLASS DEPRECATED. Entire Events object is passed in as MarkerInfo since we need more data
 
+@Deprecated
 public class MarkerInfo {
     public String nom;
     public String sport;
