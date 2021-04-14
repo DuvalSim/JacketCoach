@@ -1,24 +1,23 @@
 package com.mas.jacketcoach;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.button.MaterialButton;
 import com.mas.jacketcoach.model.MarkerInfo;
 
 public class EventWindowMap extends BottomSheetDialogFragment {
-    private Button buttonParticipate;
-    private Button buttonContact;
-    private Button buttonShare;
+    private MaterialButton buttonParticipate;
+    private MaterialButton buttonContact;
+    private MaterialButton buttonShare;
     private TextView textEventNom;
     private TextView textEventSport;
     private TextView textEventDate;
@@ -32,6 +31,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.event_windowmap, container, false);
+
         buttonParticipate = view.findViewById(R.id.button_participate);
         buttonContact = view.findViewById(R.id.button_contact);
         buttonShare = view.findViewById(R.id.button_share);
@@ -47,7 +47,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 // IMPLEMENT FOR PARTICIPATE BUTTON
-
+                Log.d("Test", "Test1");
             }
         });
 
@@ -55,6 +55,8 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 // IMPLEMENT FOR CONTACT ORGANIZER BUTTON
+                Log.d("Test", "Test2");
+
             }
         });
 
@@ -62,6 +64,8 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 // IMPLEMENT FOR SHARE BUTTON
+                Log.d("Test", "Test3");
+
             }
         });
 
