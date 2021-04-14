@@ -480,6 +480,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 Date date = format.parse(events.get(i).getDate());
+                // TODO: Change the next line so events created today will show up
                 if (date.after(new Date())) {
                     Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                             .position(eventLocation)
