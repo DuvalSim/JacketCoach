@@ -27,6 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class BaseEventFragment extends Fragment {
 
@@ -54,6 +56,15 @@ public abstract class BaseEventFragment extends Fragment {
      * @return      The firebase Query object or null
      */
     protected abstract Query getEventQuery();
+
+    protected Collection<Event> handleDataSnapshot(Iterable<DataSnapshot> events) {
+        ArrayList<Event> eventList = new ArrayList<>();
+        for (DataSnapshot event : events) {
+            eventList.add(Event.fromDataSnapshot(event));
+        }
+        return eventList;
+    }
+
     public BaseEventFragment() {
         // Required empty public constructor
     }
@@ -69,11 +80,8 @@ public abstract class BaseEventFragment extends Fragment {
                 if (!task.isSuccessful()) {
                     Log.e("Firebase", "Error getting data in populate event array", task.getException());
                 } else {
-                    ArrayList<Event> eventList = new ArrayList<>();
-                    for (DataSnapshot event : task.getResult().getChildren()) {
+                    Collection<Event> eventList = handleDataSnapshot(task.getResult().getChildren());
 
-                        eventList.add(Event.fromDataSnapshot(event));
-                    }
                     Log.d("NAVIGATION", "Got events !", task.getException());
                     mListViewAdapter.addAll(eventList);
                 }

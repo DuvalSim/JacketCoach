@@ -82,6 +82,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
             Toast.makeText(getActivity(), "Error: No associated user found. Login with a valid user.", Toast.LENGTH_LONG).show();
 
             // TODO: In a production Android app, this should be done by a robust receiver instead
+            // TODO: implement a class/method that handle this kind of stuff
             Intent loginUserActivity = new Intent(getActivity(), LoginActivity.class);
             loginUserActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginUserActivity);

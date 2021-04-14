@@ -189,11 +189,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 autocompleteCaller = SEARCH_CALLED_AUTOCOMPLETE;
                 onSearchCalled();
                 return true;
-                // Hidden for Sprint 4
-//            case R.id.action_favorite:
-//                // User chose the "Favorite" action, mark the current item
-//                // as a favorite...
-//                return true;
 
             case R.id.action_centerOnLocation:
                 setCameraOnDeviceLocation(false);
@@ -483,6 +478,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
             try {
                 Date date = format.parse(events.get(i).getDate());
                 // TODO: Change the next line so events created today will show up
+                // To be confirmed : work on my end
                 if (date.after(new Date())) {
                     Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                             .position(eventLocation)
