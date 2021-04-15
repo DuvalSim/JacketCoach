@@ -17,7 +17,7 @@
 
     <android.widget.ImageButton
         android:id="@+id/remove_player_button"
-        android:layout_width="12dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:backgroundTintMode="screen"

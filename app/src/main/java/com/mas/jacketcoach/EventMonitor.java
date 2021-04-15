@@ -8,6 +8,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.Size;
 import android.view.CollapsibleActionView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class EventMonitor extends AppCompatActivity {
         eventName_textView = (TextView) findViewById(R.id.event_name);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
 
-        LinearLayout players_layout = (LinearLayout) findViewById(R.id.layout_players);
+        players_layout = (LinearLayout) findViewById(R.id.layout_players);
         eventName_textView.setText(mEvent.getName());
         eventSport_textView.setText(mEvent.getSport());
 
@@ -64,8 +65,8 @@ public class EventMonitor extends AppCompatActivity {
 //            ImageButton removePlayer = (ImageButton) playerLayout.findViewById(R.id.remove_player_button);
 //            removePlayer.setBackground(null);
             LinearLayout playerLayout = new LinearLayout(this);
-            playerLayout.setOrientation(LinearLayout.HORIZONTAL);
-            playerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+//            playerLayout.setOrientation(LinearLayout.HORIZONTAL);
+            playerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
             TextView playerName = new TextView(this);
             playerName.setText(player);
             playerName.setTextSize(18);
@@ -75,8 +76,12 @@ public class EventMonitor extends AppCompatActivity {
             ImageButton removePlayer = new ImageButton(this);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//            params.(RelativeLayout.END_OF, playerLayout.getId());
+//            params.(2);
+            params.weight = 1.0f;
+            params.gravity = Gravity.CENTER_HORIZONTAL;
+            removePlayer.setLayoutParams(params);
             removePlayer.setImageResource(R.drawable.ic_remove_player);
+            removePlayer.setPadding(50,0,0,7);
             removePlayer.setBackground(null);
             removePlayer.setTag(player);
             removePlayer.setLayoutParams(params);
