@@ -1,11 +1,13 @@
 package com.mas.jacketcoach;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -114,6 +116,15 @@ public abstract class BaseEventFragment extends Fragment {
         listView.setAdapter(mListViewAdapter);
         populateEventArray();
         // Inflate the layout for this fragment
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event event = (Event) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), EventMonitor.class);
+                intent.putExtra("EVENT_MONITORED", event);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

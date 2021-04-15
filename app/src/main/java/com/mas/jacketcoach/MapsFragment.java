@@ -256,6 +256,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                     Place place = Autocomplete.getPlaceFromIntent(data);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("LAT_LNG", place.getLatLng());
+                    bundle.putString("LOCATION_NAME", place.getName());
                     Intent intent = new Intent(getActivity(), AddEventActivity.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
