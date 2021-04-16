@@ -2,10 +2,11 @@ package com.mas.jacketcoach.model;
 
 import com.google.firebase.database.DataSnapshot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Event {
+public class Event implements Serializable {
     private String id;
     private String idOrganizer;
     private String name;

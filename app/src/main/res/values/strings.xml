@@ -42,4 +42,13 @@
     <string name="user_fullName_key">fullName</string>
     <string name="user_email_key">email</string>
     <string name="events_players_key">players</string>
+    <string name="event_name_label">Event name</string>
+    <string name="event_sport_label">Sport</string>
+    <string name="button_view_on_map_label">View on map</string>
+    <string name="button_update_event_label">Update event</string>
+    <string name="event_players_attending_label">Players attending</string>
+    <string name="firebase_event_players_key">players</string>
+    <string name="TAG_PLAYER">0</string>
+    <string name="TAG_LAYOUT">1</string>
+    <string name="monitoring_noPlayerRegistered">No player registered yet</string>
 </resources>

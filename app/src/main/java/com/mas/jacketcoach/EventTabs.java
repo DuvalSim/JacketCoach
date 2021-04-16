@@ -83,6 +83,7 @@ public class EventTabs extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewPager = view.findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(2);
         pagerAdapter = new EventSlidePagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);

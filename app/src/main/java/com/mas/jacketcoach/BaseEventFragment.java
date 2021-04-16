@@ -1,11 +1,13 @@
 package com.mas.jacketcoach;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
+import com.mas.jacketcoach.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,24 +72,29 @@ public abstract class BaseEventFragment extends Fragment {
         // Required empty public constructor
     }
 
-    final private void populateEventArray() {
+    private void populateEventArray() {
         Query query = getEventQuery();
         if (query == null){
+            Log.d("NAVIGATION", "query is null");
             return;
         }
         query.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("NAVIGATION", "onComplete");
                 if (!task.isSuccessful()) {
+                    Log.d("NAVIGATION", "Does not work");
                     Log.e("Firebase", "Error getting data in populate event array", task.getException());
                 } else {
                     Collection<Event> eventList = handleDataSnapshot(task.getResult().getChildren());
-
+                    Log.d("NAVIGATION",String.valueOf(task.getResult().getChildrenCount()));
                     Log.d("NAVIGATION", "Got events !", task.getException());
                     mListViewAdapter.addAll(eventList);
                 }
             }
         });
+
+
     }
 
     @Override
@@ -112,8 +120,19 @@ public abstract class BaseEventFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.listViewEvent);
 
         listView.setAdapter(mListViewAdapter);
+        Log.d("NAVIGATION", "populate event array");
         populateEventArray();
         // Inflate the layout for this fragment
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event event = (Event) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getContext(), EventMonitor.class);
+                Log.d("EventMonitor", "Event beeing given :" );
+                intent.putExtra("EVENT_MONITORED", event);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

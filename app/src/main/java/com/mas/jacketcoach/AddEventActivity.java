@@ -53,6 +53,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
     private LatLng latlng;
     private DatabaseReference mDatabase;
     private FirebaseUser user;
+    private String event_location_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,8 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
 
         //Retrieve values from MapsFragment
         latlng = getIntent().getExtras().getParcelable("LAT_LNG");
-
+        //TODO : Store it in DB ?
+        event_location_name = getIntent().getExtras().getString("LOCATION_NAME","");
         // Initialize UI elements
         nameEditText = (EditText) findViewById(R.id.name);
         sportEditText = (EditText) findViewById(R.id.other_sport);

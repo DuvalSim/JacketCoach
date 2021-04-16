@@ -24,6 +24,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mas.jacketcoach.LoginActivity" />
         </activity>
+        <activity android:name=".EventMonitor"></activity>
         <activity
             android:name=".LoginActivity"
             android:theme="@style/LoginTheme">
