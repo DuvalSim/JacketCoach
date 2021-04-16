@@ -1,32 +1,21 @@
 package com.mas.jacketcoach;
 
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.Layout;
 import android.util.Log;
-import android.util.Size;
-import android.view.CollapsibleActionView;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,33 +24,52 @@ import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.User;
 
-import org.w3c.dom.Text;
-
 import java.util.Collection;
 
 public class EventMonitor extends AppCompatActivity {
 
     private Event mEvent;
+    // Views
     private TextView eventName_textView;
     private TextView eventSport_textView;
+    private TextView eventDate_textView;
+    private TextView eventOrganizer_textView;
     private LinearLayout players_layout;
-    private DatabaseReference mDatabase;
-//    private TextView
 
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+
+    private ValueEventListener listener;
+    private DatabaseReference eventRef;
+
+    private boolean isCurrentUserOrganizer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+
+
         setContentView(R.layout.activity_eventmonitor);
+        // Get event to be displayed (before DB update)
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
-        DatabaseReference eventRef = mDatabase.child(getString(R.string.events_table_key)).child(mEvent.getId());
-        eventRef.addValueEventListener(new ValueEventListener() {
+        isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
+
+        //
+        eventName_textView = (TextView) findViewById(R.id.event_name);
+        eventSport_textView = (TextView) findViewById(R.id.event_sport);
+        eventDate_textView = (TextView) findViewById(R.id.event_date);
+        players_layout = (LinearLayout) findViewById(R.id.layout_players);
+        eventOrganizer_textView = (TextView) findViewById(R.id.event_organizer);
+        // Getting event reference in DB
+        eventRef = mDatabase.child(getString(R.string.events_table_key)).child(mEvent.getId());
+        listener = eventRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Add this event id to the user assigned event list
+                Log.d("EventMonitor", mEvent.getId());
                 mEvent = snapshot.getValue(Event.class);
-                Log.d("EventMonitor", mEvent.getPlayers().toString());
                 updateUI();
 
             }
@@ -76,62 +84,48 @@ public class EventMonitor extends AppCompatActivity {
 
     private void updateUI(){
 
-        eventName_textView = (TextView) findViewById(R.id.event_name);
-        eventSport_textView = (TextView) findViewById(R.id.event_sport);
 
-        players_layout = (LinearLayout) findViewById(R.id.layout_players);
+        // Remove layouts of participants to prevent adding users already in place
         players_layout.removeViews(1, players_layout.getChildCount() - 2);
+
         eventName_textView.setText(mEvent.getName());
         eventSport_textView.setText(mEvent.getSport());
-
-        // Organizer :
-        TextView eventOrganizer_textView = (TextView) findViewById(R.id.event_organizer);
+        eventDate_textView.setText(mEvent.getDate());
         eventOrganizer_textView.setText(mEvent.getIdOrganizer());
+
         int index = 0;
         Collection<String> participatingUsers = (Collection<String>) mEvent.getPlayers().clone();
         participatingUsers.remove(mEvent.getIdOrganizer());
         for (String player : participatingUsers){
-//            LinearLayout playerLayout = new LinearLayout(this);
-//            ViewGroup playerLayout = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.textview_monitor_event, null,false );
-//
-//            Log.d("EventMonitor", "COME ON");
-//            TextView playerName = (TextView) playerLayout.getChildAt(0);
-//            playerName.setText(player);
 
-//            ImageButton removePlayer = (ImageButton) playerLayout.findViewById(R.id.remove_player_button);
-//            removePlayer.setBackground(null);
             LinearLayout playerLayout = new LinearLayout(this);
-//            playerLayout.setOrientation(LinearLayout.HORIZONTAL);
-            playerLayout.setId(index);
             playerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
             TextView playerName = new TextView(this);
             playerName.setText(player);
             playerName.setTextSize(18);
-
-            playerLayout.addView(playerName);
             playerName.setLayoutParams(eventName_textView.getLayoutParams());
-            ImageButton removePlayer = new ImageButton(this);
+            playerLayout.addView(playerName);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//            params.(2);
-            params.weight = 1.0f;
-            params.gravity = Gravity.CENTER_HORIZONTAL;
-            removePlayer.setLayoutParams(params);
-            removePlayer.setImageResource(R.drawable.ic_remove_player);
-            removePlayer.setPadding(50,0,0,7);
-            removePlayer.setBackground(null);
-            removePlayer.setTag(R.string.TAG_PLAYER,player);
-            removePlayer.setTag(R.string.TAG_LAYOUT, playerLayout.getId());
-            removePlayer.setLayoutParams(params);
-            removePlayer.setOnClickListener(removePlayerClicked);
-            playerLayout.addView(removePlayer);
-
+            if(isCurrentUserOrganizer) {
+                ImageButton removePlayer = new ImageButton(this);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.weight = 1.0f;
+                params.gravity = Gravity.CENTER_HORIZONTAL;
+                removePlayer.setLayoutParams(params);
+                removePlayer.setImageResource(R.drawable.ic_remove_player);
+                removePlayer.setPadding(50, 0, 0, 7);
+                removePlayer.setBackground(null);
+                removePlayer.setTag(R.string.TAG_PLAYER, player);
+                removePlayer.setLayoutParams(params);
+                removePlayer.setOnClickListener(removePlayerClicked);
+                playerLayout.addView(removePlayer);
+            }
             players_layout.addView(playerLayout, ++index);
 
         }
         if(index == 0){
             TextView noPlayerTextView = new TextView(this);
-            noPlayerTextView.setText("No player registered yet");
+            noPlayerTextView.setText(R.string.monitoring_noPlayerRegistered);
             players_layout.addView(noPlayerTextView, 1);
         }
     }
@@ -139,9 +133,6 @@ public class EventMonitor extends AppCompatActivity {
     private View.OnClickListener removePlayerClicked = new View.OnClickListener() {
         public void onClick(View v) {
             String playerId = (String) v.getTag(R.string.TAG_PLAYER);
-            int layoutId = (int) v.getTag(R.string.TAG_LAYOUT);
-            Toast toast = Toast.makeText(v.getContext(),"remove player ".concat(playerId), Toast.LENGTH_SHORT);
-            toast.show();
 
             // Remove event from user list
             DatabaseReference userRef = mDatabase.child(getString(R.string.users_table_key)).child(playerId);
@@ -162,21 +153,24 @@ public class EventMonitor extends AppCompatActivity {
                     }
                 }
             });
-            Log.d("EventMonitor", "removing Plater");
+            Log.d("EventMonitor", "removing Player");
             // Remove users from event
 
             mEvent.getPlayers().remove(playerId);
             mDatabase.child("events").child(mEvent.getId()).child(getString(R.string.firebase_event_players_key)).setValue(mEvent.getPlayers());
 
-//            View layoutToDelete =  findViewById(layoutId);
-//            players_layout.removeView(layoutToDelete);
-//            if(mEvent.getPlayers().size() == 1){
-//                TextView noPlayerTextView = new TextView(getApplicationContext());
-//                noPlayerTextView.setText("No player registered yet");
-//                players_layout.addView(noPlayerTextView, 1);
-//            }
+            Toast toast = Toast.makeText(v.getContext(),"Player has been removed :".concat(playerId), Toast.LENGTH_SHORT);
+            toast.show();
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(eventRef != null && listener != null){
+            Log.d("EventMonitor", "remove listener");
+            eventRef.removeEventListener(listener);
+        }
 
+    }
 }
