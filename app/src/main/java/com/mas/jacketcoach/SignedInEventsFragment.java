@@ -26,6 +26,9 @@ public class SignedInEventsFragment extends BaseEventFragment {
     protected Collection<Event> handleDataSnapshot(Iterable<DataSnapshot> events) {
         ArrayList<Event> eventList = new ArrayList<Event>();
         for(DataSnapshot event : events){
+            if(event.child("idOrganizer").getValue().toString().equals(mAuth.getCurrentUser().getUid())){
+                continue;
+            }
             for ( DataSnapshot player : event.child("players").getChildren()) {
                 if(player.getValue().toString().equals(mAuth.getCurrentUser().getUid())){
                     eventList.add(Event.fromDataSnapshot(event));

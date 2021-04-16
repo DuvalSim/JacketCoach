@@ -47,4 +47,7 @@
     <string name="button_view_on_map_label">View on map</string>
     <string name="button_update_event_label">Update event</string>
     <string name="event_players_attending_label">Players attending</string>
+    <string name="firebase_event_players_key">players</string>
+    <string name="TAG_PLAYER">0</string>
+    <string name="TAG_LAYOUT">1</string>
 </resources>
