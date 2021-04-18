@@ -1,5 +1,7 @@
 package com.mas.jacketcoach.model;
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.util.ArrayList;
 
 public class User {
@@ -26,6 +28,20 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.userEventsIds = userEventsIds;
     }
+
+    public static User fromDataSnapshot(DataSnapshot userSnapshot){
+        String uid = userSnapshot.child("uid").getValue().toString();
+        String playNickname = userSnapshot.child("playNickname").getValue().toString();
+        String fullName = userSnapshot.child("fullName").getValue().toString();
+        String email = userSnapshot.child("email").getValue().toString();
+        String phoneNumber = userSnapshot.child("phoneNumber").getValue().toString();
+        ArrayList<String> userEvents = new ArrayList<>();
+        for (DataSnapshot userId : userSnapshot.child("userEvents").getChildren()) {
+            userEvents.add(userId.getValue().toString());
+        }
+        return new User(uid, playNickname, fullName, email, phoneNumber, userEvents);
+    }
+
 
     public String getUid() {
         return uid;

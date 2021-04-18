@@ -20,10 +20,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class EventMonitor extends AppCompatActivity {
@@ -41,6 +43,7 @@ public class EventMonitor extends AppCompatActivity {
 
     private ValueEventListener listener;
     private DatabaseReference eventRef;
+    private ArrayList<User> users;
 
     private boolean isCurrentUserOrganizer;
     @Override
@@ -53,9 +56,9 @@ public class EventMonitor extends AppCompatActivity {
 
         setContentView(R.layout.activity_eventmonitor);
         // Get event to be displayed (before DB update)
+        users = new ArrayList<>();
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
-
         //
         eventName_textView = (TextView) findViewById(R.id.event_name);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
@@ -70,8 +73,7 @@ public class EventMonitor extends AppCompatActivity {
                 // Add this event id to the user assigned event list
                 Log.d("EventMonitor", mEvent.getId());
                 mEvent = snapshot.getValue(Event.class);
-                updateUI();
-
+                getUsers();
             }
 
             @Override
@@ -79,19 +81,18 @@ public class EventMonitor extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error getting participant info: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     private void updateUI(){
-
-
         // Remove layouts of participants to prevent adding users already in place
         players_layout.removeViews(1, players_layout.getChildCount() - 2);
 
         eventName_textView.setText(mEvent.getName());
         eventSport_textView.setText(mEvent.getSport());
         eventDate_textView.setText(mEvent.getDate());
-        eventOrganizer_textView.setText(mEvent.getIdOrganizer());
+
+        String nameOrganizer = searchUserWithUID(mEvent.getIdOrganizer());
+        eventOrganizer_textView.setText(nameOrganizer);
 
         int index = 0;
         Collection<String> participatingUsers = (Collection<String>) mEvent.getPlayers().clone();
@@ -101,7 +102,8 @@ public class EventMonitor extends AppCompatActivity {
             LinearLayout playerLayout = new LinearLayout(this);
             playerLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
             TextView playerName = new TextView(this);
-            playerName.setText(player);
+            String name = searchUserWithUID(player);
+            playerName.setText(name);
             playerName.setTextSize(18);
             playerName.setLayoutParams(eventName_textView.getLayoutParams());
             playerLayout.addView(playerName);
@@ -173,4 +175,42 @@ public class EventMonitor extends AppCompatActivity {
         }
 
     }
+
+    protected Collection<User> handleDataSnapshot(Iterable<DataSnapshot> users) {
+        ArrayList<User> userList = new ArrayList<>();
+        for (DataSnapshot user : users) {
+            userList.add(User.fromDataSnapshot(user));
+        }
+        return userList;
+    }
+
+    private void getUsers(){
+        Log.d("NAME_UID", "ICIIII");
+        mDatabase.child(getString(R.string.users_table_key)).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("NAME_UID", "onComplete");
+                if (!task.isSuccessful()) {
+                    Log.d("NAME_UID", "Does not work");
+                    Log.e("Firebase", "Error getting user in getName", task.getException());
+                } else {
+                    Collection<User> userList = handleDataSnapshot(task.getResult().getChildren());
+                    Log.d("NAME_UID",String.valueOf(task.getResult().getChildren()));
+                    Log.d("NAME_UID", "Got user !", task.getException());
+                    users.addAll(userList);
+                    updateUI();
+                }
+            }
+        });
+    }
+
+    private String searchUserWithUID(String uid) {
+        for (User user : users) {
+            if (user.getUid().equals(uid)) {
+                return user.getPlayNickname();
+            }
+        }
+        return "Q";
+    }
+
 }
