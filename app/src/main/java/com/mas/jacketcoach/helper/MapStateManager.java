@@ -75,7 +75,6 @@ public class MapStateManager {
         SharedPreferences.Editor editor = mapStatePrefs.edit();
         editor.putFloat(LATITUDE, latitude);
         editor.putFloat(LONGITUDE,longitude);
-        editor.putFloat(ZOOM, 15);
         editor.commit();
         centeredOnEvent = true;
 
