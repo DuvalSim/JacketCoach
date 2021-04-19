@@ -83,12 +83,11 @@ public abstract class BaseEventFragment extends Fragment {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 Log.d("NAVIGATION", "onComplete");
                 if (!task.isSuccessful()) {
-                    Log.d("NAVIGATION", "Does not work");
+
                     Log.e("Firebase", "Error getting data in populate event array", task.getException());
                 } else {
                     Collection<Event> eventList = handleDataSnapshot(task.getResult().getChildren());
-                    Log.d("NAVIGATION",String.valueOf(task.getResult().getChildrenCount()));
-                    Log.d("NAVIGATION", "Got events !", task.getException());
+
                     mListViewAdapter.addAll(eventList);
                 }
             }
@@ -126,9 +125,9 @@ public abstract class BaseEventFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("startActivityDebug", "onItemClick");
                 Event event = (Event) parent.getItemAtPosition(position);
-                Intent intent = new Intent(getContext(), EventMonitor.class);
-                Log.d("EventMonitor", "Event beeing given :" );
+                Intent intent = new Intent(getActivity(), EventMonitor.class);
                 intent.putExtra("EVENT_MONITORED", event);
                 startActivity(intent);
             }

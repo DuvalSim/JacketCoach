@@ -12,9 +12,7 @@ public class MyEventsFragment extends BaseEventFragment {
 
     @Override
     protected Query getEventQuery() {
-        Log.d("NAVIGATION", mAuth.getCurrentUser().getUid());
         if (mAuth.getCurrentUser() != null){
-            Log.d("NAVIGATION","connected");
             return mDatabase.child("events").orderByChild("idOrganizer").equalTo(mAuth.getCurrentUser().getUid());
         } else {
             return null;

@@ -1,9 +1,11 @@
 package com.mas.jacketcoach;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.mas.jacketcoach.helper.MapStateManager;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.User;
 
@@ -37,6 +40,7 @@ public class EventMonitor extends AppCompatActivity {
     private TextView eventDate_textView;
     private TextView eventOrganizer_textView;
     private LinearLayout players_layout;
+    private Button viewOnMap_button;
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -46,10 +50,17 @@ public class EventMonitor extends AppCompatActivity {
     private ArrayList<User> users;
 
     private boolean isCurrentUserOrganizer;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("startActivityDebug", "onStart event monitor");
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("NAVIGATION", "event monitor");
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -59,12 +70,13 @@ public class EventMonitor extends AppCompatActivity {
         users = new ArrayList<>();
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
-        //
         eventName_textView = (TextView) findViewById(R.id.event_name);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
         eventDate_textView = (TextView) findViewById(R.id.event_date);
         players_layout = (LinearLayout) findViewById(R.id.layout_players);
         eventOrganizer_textView = (TextView) findViewById(R.id.event_organizer);
+        viewOnMap_button = (Button) findViewById(R.id.event_view_on_map);
+        viewOnMap_button.setOnClickListener(viewOnMapClicked);
         // Getting event reference in DB
         eventRef = mDatabase.child(getString(R.string.events_table_key)).child(mEvent.getId());
         listener = eventRef.addValueEventListener(new ValueEventListener() {
@@ -131,7 +143,16 @@ public class EventMonitor extends AppCompatActivity {
             players_layout.addView(noPlayerTextView, 1);
         }
     }
-
+    private View.OnClickListener viewOnMapClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            MapStateManager mapStateManager = new MapStateManager(getApplicationContext());
+            mapStateManager.centerOnEvent((float) mEvent.getLatitude(), (float) mEvent.getLongitude());
+            Intent intent = new Intent(getApplication(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    };
     private View.OnClickListener removePlayerClicked = new View.OnClickListener() {
         public void onClick(View v) {
             String playerId = (String) v.getTag(R.string.TAG_PLAYER);
