@@ -189,7 +189,6 @@ public class EventMonitor extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("startActivityDebug", "destroy");
         if(eventRef != null && listener != null){
             Log.d("EventMonitor", "remove listener");
             eventRef.removeEventListener(listener);
