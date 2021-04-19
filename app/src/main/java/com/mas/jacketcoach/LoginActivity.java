@@ -107,10 +107,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // Debug button onClick handler (to be removed)
-    public void debugOnClick(View view) {
+    /*public void debugOnClick(View view) {
         // TODO: Farzam: IMPLEMENT REGISTER PAGE AND REMOVE BELOW TRANSITION. FOR NOW WE JUST TRANSITION TO MAIN PAGE FOR EASIER DEVELOPMENT THERE
         Intent mainUserActivity = new Intent(LoginActivity.this, MainActivity.class);
         mainUserActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainUserActivity);
-    }
+    }*/
 }
