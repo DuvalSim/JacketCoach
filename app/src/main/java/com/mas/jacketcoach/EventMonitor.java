@@ -47,10 +47,17 @@ public class EventMonitor extends AppCompatActivity {
     private DatabaseReference eventRef;
 
     private boolean isCurrentUserOrganizer;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("startActivityDebug", "onStart event monitor");
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("NAVIGATION", "event monitor");
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -60,7 +67,7 @@ public class EventMonitor extends AppCompatActivity {
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
 
-        //
+
         eventName_textView = (TextView) findViewById(R.id.event_name);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
         eventDate_textView = (TextView) findViewById(R.id.event_date);
@@ -140,8 +147,9 @@ public class EventMonitor extends AppCompatActivity {
         public void onClick(View v) {
             MapStateManager mapStateManager = new MapStateManager(getApplicationContext());
             mapStateManager.centerOnEvent((float) mEvent.getLatitude(), (float) mEvent.getLongitude());
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplication(), MainActivity.class);
             startActivity(intent);
+            finish();
         }
     };
     private View.OnClickListener removePlayerClicked = new View.OnClickListener() {
@@ -181,6 +189,7 @@ public class EventMonitor extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("startActivityDebug", "destroy");
         if(eventRef != null && listener != null){
             Log.d("EventMonitor", "remove listener");
             eventRef.removeEventListener(listener);
