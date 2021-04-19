@@ -64,7 +64,7 @@ public class EventMonitor extends AppCompatActivity {
 
         setContentView(R.layout.activity_eventmonitor);
         // Get event to be displayed (before DB update)
-        mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
+        mEvent = (Event) getIntent().getSerializableExtra(getString(R.string.extra_eventToMonitor));
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
 
 

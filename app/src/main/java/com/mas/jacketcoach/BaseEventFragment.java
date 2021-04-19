@@ -128,7 +128,7 @@ public abstract class BaseEventFragment extends Fragment {
                 Log.d("startActivityDebug", "onItemClick");
                 Event event = (Event) parent.getItemAtPosition(position);
                 Intent intent = new Intent(getActivity(), EventMonitor.class);
-                intent.putExtra("EVENT_MONITORED", event);
+                intent.putExtra(getString(R.string.extra_eventToMonitor), event);
                 startActivity(intent);
             }
         });

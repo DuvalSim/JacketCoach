@@ -18,8 +18,8 @@
         android:id="@+id/text_event_sport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/text_event_date"
@@ -27,6 +27,13 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/black"/>
+
+    <TextView
+        android:id="@+id/event_view_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/view_more_eventInfo"
+        android:drawableBottom="@drawable/ic_view_more_event_info"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"

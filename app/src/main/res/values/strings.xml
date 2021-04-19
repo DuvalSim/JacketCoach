@@ -51,4 +51,6 @@
     <string name="TAG_PLAYER">0</string>
     <string name="TAG_LAYOUT">1</string>
     <string name="monitoring_noPlayerRegistered">No player registered yet</string>
+    <string name="view_more_eventInfo">View more</string>
+    <string name="extra_eventToMonitor">EVENT_MONITORED</string>
 </resources>

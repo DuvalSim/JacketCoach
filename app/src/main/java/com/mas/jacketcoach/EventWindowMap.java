@@ -43,6 +43,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
     private TextView textEventName;
     private TextView textEventSport;
     private TextView textEventDate;
+    private TextView viewMoreText;
     private Event eventInfo;
 
     private DatabaseReference mDatabase;
@@ -67,11 +68,13 @@ public class EventWindowMap extends BottomSheetDialogFragment {
         textEventName = view.findViewById(R.id.text_event_name);
         textEventSport = view.findViewById(R.id.text_event_sport);
         textEventDate = view.findViewById(R.id.text_event_date);
+        viewMoreText = view.findViewById(R.id.event_view_more);
 
         textEventName.setText(eventInfo.getName());
         textEventSport.setText(eventInfo.getSport());
         textEventDate.setText(eventInfo.getDate());
 
+        viewMoreText.setOnClickListener(onViewMoreClicked);
         // Initialize Firebase handles
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -310,6 +313,15 @@ public class EventWindowMap extends BottomSheetDialogFragment {
 
         return view;
     }
+
+    private View.OnClickListener onViewMoreClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getActivity(), EventMonitor.class);
+            intent.putExtra(getString(R.string.extra_eventToMonitor), eventInfo);
+            startActivity(intent);
+        }
+    };
 
     // Helper method for reloading the fragment so marker information get updated
     private void reloadFragment() {
