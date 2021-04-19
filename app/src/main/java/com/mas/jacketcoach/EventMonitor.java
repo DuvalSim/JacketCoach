@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -13,7 +14,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,7 +25,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.helper.MapStateManager;
 import com.mas.jacketcoach.model.Event;
@@ -61,9 +63,9 @@ public class EventMonitor extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("NAVIGATION", "event monitor");
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-
 
         setContentView(R.layout.activity_eventmonitor);
         // Get event to be displayed (before DB update)
@@ -91,6 +93,15 @@ public class EventMonitor extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getApplicationContext(), "Error getting participant info: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.monitoring_toolbar);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
     }
@@ -206,7 +217,6 @@ public class EventMonitor extends AppCompatActivity {
     }
 
     private void getUsers(){
-        Log.d("NAME_UID", "ICIIII");
         mDatabase.child(getString(R.string.users_table_key)).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -231,7 +241,7 @@ public class EventMonitor extends AppCompatActivity {
                 return user.getPlayNickname();
             }
         }
-        return "Q";
+        return "Nickname not found";
     }
 
 }

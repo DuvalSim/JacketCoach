@@ -27,6 +27,7 @@
     import com.google.android.gms.maps.GoogleMap;
     import com.google.android.gms.maps.OnMapReadyCallback;
     import com.google.android.gms.maps.SupportMapFragment;
+    import com.google.android.gms.maps.model.BitmapDescriptorFactory;
     import com.google.android.gms.maps.model.CameraPosition;
     import com.google.android.gms.maps.model.LatLng;
     import com.google.android.gms.maps.model.Marker;
@@ -448,18 +449,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                     Log.e("firebase", "Error getting data", task.getException());
                 } else {
                     for (DataSnapshot event : task.getResult().getChildren()) {
-                        String id = event.child("id").getValue().toString();
-                        String idOrganizer = event.child("idOrganizer").getValue().toString();
-                        String name = event.child("name").getValue().toString();
-                        String sport = event.child("sport").getValue().toString();
-                        String date = event.child("date").getValue().toString();
-                        double latitude = Double.parseDouble(event.child("latitude").getValue().toString());
-                        double longitude = Double.parseDouble(event.child("longitude").getValue().toString());
-                        ArrayList<String> players = new ArrayList<>();
-                        for (DataSnapshot player : event.child("players").getChildren()) {
-                            players.add(player.getValue().toString());
-                        }
-                        events.add(new Event(id, idOrganizer, name, sport, date, latitude, longitude, players));
+                        events.add(Event.fromDataSnapshot(event));
                     }
                     Log.d("NAVIGATION", "got events");
                     if (events != null && events.size() > 0) {
@@ -481,10 +471,39 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
                 // TODO: Change the next line so events created today will show up
                 // To be confirmed : work on my end
                 if (date.after(new Date())) {
+                    int sportIcon = R.drawable.ic_default;
+                    switch(events.get(i).getSport()) {
+                        case "Basketball":
+                            sportIcon = R.drawable.ic_basketball;
+                            break;
+                        case "Volleyball":
+                            sportIcon = R.drawable.ic_volleyball;
+                            break;
+                        case "Soccer":
+                            sportIcon = R.drawable.ic_soccer;
+                            break;
+                        case "Tennis":
+                            sportIcon = R.drawable.ic_tennis;
+                            break;
+                        case "Football":
+                            sportIcon = R.drawable.ic_football;
+                            break;
+                        case "Rugby":
+                            sportIcon = R.drawable.ic_rugby;
+                            break;
+                        case "Ultimate":
+                            sportIcon = R.drawable.ic_frisbee;
+                            break;
+                        case "Handball":
+                            sportIcon = R.drawable.ic_handball;
+                            break;
+                        default:
+                            sportIcon = R.drawable.ic_default;
+                    }
                     Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                             .position(eventLocation)
-                            .title(events.get(i).getName()));
-//                    MarkerInfo markerInfo = new MarkerInfo(events.get(i).getName(), events.get(i).getSport(), events.get(i).getDate());
+                            .title(events.get(i).getName())
+                            .icon(BitmapDescriptorFactory.fromResource(sportIcon)));
                     mMarkerMap.put(marker, events.get((i)));
                     mGoogleMap.setOnInfoWindowClickListener(MapsFragment.this);
                 }
