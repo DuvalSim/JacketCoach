@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated
 public class FirebaseUIActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 2110;

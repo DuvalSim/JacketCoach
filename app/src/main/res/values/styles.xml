@@ -13,4 +13,11 @@
     <style name="BorderedButton" parent="Theme.MaterialComponents">
     </style>
 
+    <style name="OurCustomAppTheme" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:textColor">@color/GT_Color_Navy</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:colorPrimaryDark">@color/GT_Color_Navy</item>
+    </style>
+
+
 </resources>
