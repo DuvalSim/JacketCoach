@@ -2,6 +2,7 @@ package com.mas.jacketcoach;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,17 +22,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.mas.jacketcoach.model.Event;
-import com.mas.jacketcoach.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public abstract class BaseEventFragment extends Fragment {
 
@@ -142,7 +139,9 @@ public abstract class BaseEventFragment extends Fragment {
 
         private class ViewHolder {
             TextView eventName;
+            TextView eventDate;
             TextView eventSport;
+            ImageView sportLogo;
         }
 
         @NonNull
@@ -154,7 +153,10 @@ public abstract class BaseEventFragment extends Fragment {
                 viewHolder = new ViewHolder();
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_event, parent, false);
                 viewHolder.eventName = (TextView) convertView.findViewById(R.id.event_name);
+                viewHolder.eventDate = (TextView) convertView.findViewById(R.id.event_date);
                 viewHolder.eventSport = (TextView) convertView.findViewById(R.id.event_sport);
+                viewHolder.sportLogo = (ImageView) convertView.findViewById(R.id.event_sport_logo);
+
                 // Cache the viewHolder
                 convertView.setTag(viewHolder);
             } else {
@@ -162,7 +164,44 @@ public abstract class BaseEventFragment extends Fragment {
             }
 
             viewHolder.eventName.setText(event.getName());
+            viewHolder.eventName.setTypeface(Typeface.DEFAULT_BOLD);
+
+            viewHolder.eventDate.setText(event.getDate());
+
             viewHolder.eventSport.setText(event.getSport());
+            viewHolder.eventSport.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+
+            int sportIcon;
+            switch(event.getSport()) {
+                case "Basketball":
+                    sportIcon = R.drawable.ic_basketball;
+                    break;
+                case "Volleyball":
+                    sportIcon = R.drawable.ic_volleyball;
+                    break;
+                case "Soccer":
+                    sportIcon = R.drawable.ic_soccer;
+                    break;
+                case "Tennis":
+                    sportIcon = R.drawable.ic_tennis;
+                    break;
+                case "Football":
+                    sportIcon = R.drawable.ic_football;
+                    break;
+                case "Rugby":
+                    sportIcon = R.drawable.ic_rugby;
+                    break;
+                case "Ultimate":
+                    sportIcon = R.drawable.ic_frisbee;
+                    break;
+                case "Handball":
+                    sportIcon = R.drawable.ic_handball;
+                    break;
+                default:
+                    sportIcon = R.drawable.ic_default;
+            }
+
+            viewHolder.sportLogo.setBackgroundResource(sportIcon);
 
             return convertView;
         }
