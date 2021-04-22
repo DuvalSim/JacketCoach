@@ -1,8 +1,11 @@
     package com.mas.jacketcoach;
 
     import android.Manifest;
+    import android.content.Context;
     import android.content.Intent;
     import android.content.pm.PackageManager;
+    import android.location.Address;
+    import android.location.Geocoder;
     import android.location.Location;
     import android.os.Bundle;
     import android.util.Log;
@@ -10,6 +13,7 @@
     import android.view.MenuItem;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.widget.Spinner;
     import android.widget.Toast;
 
     import androidx.annotation.NonNull;
@@ -48,6 +52,7 @@
     import com.mas.jacketcoach.helper.MapStateManager;
     import com.mas.jacketcoach.model.Event;
 
+    import java.io.IOException;
     import java.text.ParseException;
     import java.text.SimpleDateFormat;
     import java.util.ArrayList;
@@ -55,6 +60,7 @@
     import java.util.Date;
     import java.util.HashMap;
     import java.util.List;
+    import java.util.Locale;
     import java.util.Map;
 
 
@@ -277,9 +283,32 @@ public class MapsFragment extends Fragment implements GoogleMap.OnInfoWindowClic
     public void onMapLongClick(LatLng latLng) {
         Bundle bundle = new Bundle();
         bundle.putParcelable("LAT_LNG", latLng);
+        bundle.putString("LOCATION_NAME", getAddress(this.getContext(), latLng.latitude, latLng.longitude));
         Intent intent = new Intent(getActivity(), AddEventActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    public String getAddress(Context ctx, double lat, double lng){
+        String fullAdd=null;
+        try{
+            Geocoder geocoder= new Geocoder(ctx, Locale.getDefault());
+            List<android.location.Address> addresses = geocoder.getFromLocation(lat,lng,1);
+            if(addresses.size()>0){
+                Address address = addresses.get(0);
+                fullAdd = address.getAddressLine(0);
+
+                // if you want only city or pin code use following code //
+           /* String Location = address.getLocality();
+            String zip = address.getPostalCode();
+            String Country = address.getCountryName(); */
+            }
+
+
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+        return fullAdd;
     }
 
     //region Map Location

@@ -2,6 +2,7 @@ package com.mas.jacketcoach;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,21 +39,29 @@ import com.mas.jacketcoach.helper.Validator;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.User;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.stream.IntStream;
 
 
 public class AddEventActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static String OTHER_SPORT = "Other";
-    private EditText nameEditText;
-    private EditText sportEditText;
+    private static String[] GEAR = {"a basketball", "a volleyball", "a soccer ball", "a tennis ball and a racket", "a football", "a rugby ball", "a frisbee", "a handball"};
+    private TextView addressText;
     private EditText date_field;
-    private String sport;
+    private EditText time_field;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private Spinner maxplayersSpinner;
     private Spinner sportSpinner;
+    private EditText sportEditText;
+    private String sport;
+    private TextView gearText;
     private LatLng latlng;
     private DatabaseReference mDatabase;
     private FirebaseUser user;
@@ -67,10 +79,11 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         //Retrieve values from MapsFragment
         latlng = getIntent().getExtras().getParcelable("LAT_LNG");
         //TODO : Store it in DB ?
-        event_location_name = getIntent().getExtras().getString("LOCATION_NAME","");
+
         // Initialize UI elements
-        nameEditText = (EditText) findViewById(R.id.name);
-        sportEditText = (EditText) findViewById(R.id.other_sport);
+        event_location_name = getIntent().getExtras().getString("LOCATION_NAME","");
+        addressText = (TextView) findViewById(R.id.address) ;
+        addressText.setText(event_location_name);
         date_field = (EditText)findViewById(R.id.date);
         date_field.setFocusable(false); // disable editing of this field
         date_field.setOnClickListener(new View.OnClickListener() {
@@ -79,15 +92,61 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
                 chooseDate();
             }
         });
+        time_field = (EditText)findViewById(R.id.time);
+        time_field.setFocusable(false);
+        time_field.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar cldr = Calendar.getInstance();
+                int hour = cldr.get(Calendar.HOUR_OF_DAY);
+                int minutes = cldr.get(Calendar.MINUTE - Calendar.MINUTE%10);
+                // time picker dialog
+                TimePickerDialog picker = new TimePickerDialog(AddEventActivity.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker tp, int sHour, int sMinute) {
+                                showTime(sHour, sMinute);
+                            }
+                        }, hour, minutes, false);
+                picker.show();
+            }
+        });
+        nameEditText = (EditText) findViewById(R.id.name);
+        descriptionEditText = (EditText) findViewById(R.id.description);
+        maxplayersSpinner = (Spinner) findViewById(R.id.maxplayers);
+        Integer[] numbers = new Integer[30];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = i + 1;
+        }
+        ArrayAdapter<Integer> adapterInt = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, numbers);
+        maxplayersSpinner.setAdapter(adapterInt);
+        sportEditText = (EditText) findViewById(R.id.other_sport);
         sportSpinner = (Spinner) findViewById(R.id.sport_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sports_dropdown, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sportSpinner.setAdapter(adapter);
+        ArrayAdapter<CharSequence> adapterString = ArrayAdapter.createFromResource(this, R.array.sports_dropdown, android.R.layout.simple_spinner_item);
+        adapterString.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sportSpinner.setAdapter(adapterString);
         sportSpinner.setOnItemSelectedListener(this);
-
+        gearText = (TextView) findViewById(R.id.gearText);
         //Firebase setup
         mDatabase = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        sport = parent.getItemAtPosition(position).toString();
+        if (sport.equals(OTHER_SPORT)) {
+            sportEditText.setVisibility(View.VISIBLE);
+            sportEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            gearText.setText("Remember to bring gear!");
+        } else {
+            sportEditText.setVisibility(View.INVISIBLE);
+            sportEditText.setText("");
+            sportEditText.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+            InputMethodManager inputManager = (InputMethodManager) AddEventActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(sportEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            gearText.setText("Remember to bring " + GEAR[position] + "!");
+        }
     }
 
     @Override
@@ -222,16 +281,23 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         });
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        sport = parent.getItemAtPosition(position).toString();
-        if (sport.equals(OTHER_SPORT)) {
-            sportEditText.setVisibility(View.VISIBLE);
+    public void showTime(int hour, int min) {
+        String format;
+        if (hour == 0) {
+            hour += 12;
+            format = "AM";
+        } else if (hour == 12) {
+            format = "PM";
+        } else if (hour > 12) {
+            hour -= 12;
+            format = "PM";
         } else {
-            sportEditText.setVisibility(View.INVISIBLE);
-            sportEditText.setText("");
-            InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(sportEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            format = "AM";
+        }
+        if (min < 10) {
+            time_field.setText(new StringBuilder().append(hour).append(" : 0").append(min).append(" ").append(format));
+        } else {
+            time_field.setText(new StringBuilder().append(hour).append(" : ").append(min).append(" ").append(format));
         }
     }
 
