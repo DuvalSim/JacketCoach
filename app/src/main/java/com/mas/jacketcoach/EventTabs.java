@@ -1,17 +1,15 @@
 package com.mas.jacketcoach;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -33,7 +31,7 @@ public class EventTabs extends Fragment {
     private String mParam2;
 
     private static final int NUM_PAGES = 3;
-    private static final String[] tabTitles = {"Around me", "Signed in", "My events"};
+    private static final String[] tabTitles = {"Around me", "Participating", "My events"};
     private ViewPager2 viewPager;
     private FragmentStateAdapter pagerAdapter;
 
