@@ -15,13 +15,15 @@ public class Event implements Serializable {
     private double latitude;
     private double longitude;
     private ArrayList<String> players;
+    private String description;
+    private int maxplayers;
 
     // Empty constructor required for reading database into an object using ValueEventListener
     public Event() {
 
     }
 
-    public Event(String id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players) {
+    public Event(String id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players, String description, int maxplayers) {
         this.id = id;
         this.idOrganizer = idOrganizer;
         this.name = name;
@@ -30,20 +32,25 @@ public class Event implements Serializable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.players = players;
+        this.description = description;
+        this.maxplayers = maxplayers;
     }
+
     public static Event fromDataSnapshot(DataSnapshot eventSnapshot){
         String id = eventSnapshot.child("id").getValue().toString();
         String idOrganizer = eventSnapshot.child("idOrganizer").getValue().toString();
         String name = eventSnapshot.child("name").getValue().toString();
         String sport = eventSnapshot.child("sport").getValue().toString();
         String date = eventSnapshot.child("date").getValue().toString();
+        String description = eventSnapshot.child("description").getValue().toString();
+        int maxplayers = Integer.parseInt(eventSnapshot.child("maxplayers").getValue().toString());
         double latitude = Double.parseDouble(eventSnapshot.child("latitude").getValue().toString());
         double longitude = Double.parseDouble(eventSnapshot.child("longitude").getValue().toString());
         ArrayList<String> players = new ArrayList<>();
         for (DataSnapshot player : eventSnapshot.child("players").getChildren()) {
             players.add(player.getValue().toString());
         }
-        return new Event(id, idOrganizer, name, sport, date, latitude, longitude, players);
+        return new Event(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers);
     }
 
     public String getId() {
@@ -110,6 +117,22 @@ public class Event implements Serializable {
         this.players = players;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getMaxplayers() {
+        return maxplayers;
+    }
+
+    public void setMaxplayers(int maxplayers) {
+        this.maxplayers = maxplayers;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -121,6 +144,8 @@ public class Event implements Serializable {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", players=" + players +
+                ", description='" + description + '\'' +
+                ", maxplayers=" + maxplayers +
                 '}';
     }
 
@@ -136,12 +161,14 @@ public class Event implements Serializable {
                 name.equals(event.name) &&
                 sport.equals(event.sport) &&
                 date.equals(event.date) &&
+                description.equals(event.description) &&
+                maxplayers==event.maxplayers &&
                 Objects.equals(players, event.players);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players);
+        return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers);
     }
 
 

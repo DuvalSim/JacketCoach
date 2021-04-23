@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +59,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
     private EditText nameEditText;
     private EditText descriptionEditText;
     private Spinner maxplayersSpinner;
+    private int maxplayers;
     private Spinner sportSpinner;
     private EditText sportEditText;
     private String sport;
@@ -114,9 +116,20 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         nameEditText = (EditText) findViewById(R.id.name);
         descriptionEditText = (EditText) findViewById(R.id.description);
         maxplayersSpinner = (Spinner) findViewById(R.id.maxplayers);
+        maxplayersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                maxplayers = position + 2;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+        });
         Integer[] numbers = new Integer[30];
         for (int i = 0; i < numbers.length; i++) {
-            numbers[i] = i + 1;
+            numbers[i] = i + 2;
         }
         ArrayAdapter<Integer> adapterInt = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, numbers);
         maxplayersSpinner.setAdapter(adapterInt);
@@ -137,12 +150,10 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         sport = parent.getItemAtPosition(position).toString();
         if (sport.equals(OTHER_SPORT)) {
             sportEditText.setVisibility(View.VISIBLE);
-            sportEditText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
             gearText.setText("Remember to bring gear!");
         } else {
             sportEditText.setVisibility(View.INVISIBLE);
             sportEditText.setText("");
-            sportEditText.setLayoutParams(new LinearLayout.LayoutParams(0,0));
             InputMethodManager inputManager = (InputMethodManager) AddEventActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(sportEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             gearText.setText("Remember to bring " + GEAR[position] + "!");
@@ -184,27 +195,32 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
     public void addEvent(View view) {
         //Parsing input
         String enteredName = nameEditText.getText().toString();
+        String enteredDescription = descriptionEditText.getText().toString();
         String enteredSport;
         if (sport.equals(OTHER_SPORT)) {
             enteredSport = sportEditText.getText().toString();
         } else {
             enteredSport = sport;
         }
-        String enteredDate = date_field.getText().toString();
+        String enteredDate = date_field.getText().toString() + " " + time_field.getText().toString();
 
         //Validating input
         if (!Validator.isValidText(enteredName)) {
             nameEditText.setError("Invalid Name Entered");
             return;
         }
+        if (!Validator.isValidText(enteredDescription)) {
+            descriptionEditText.setError("Invalid Description Entered");
+            return;
+        }
         if (!Validator.isValidText(enteredSport)) {
             sportEditText.setError("Invalid Sport Entered");
             return;
         }
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         sdf.setLenient(false);
         try { sdf.parse(enteredDate); }
-        catch ( Exception e ) { date_field.setError("Invalid Date"); }
+        catch ( Exception e ) { date_field.setError("Invalid Date or Time"); }
 
         // Pushing input
         // firebase pushId needs to be saved locally so we can grab event information later on
@@ -223,7 +239,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
             players.add(user.getUid());
         }
 
-        Event event = new Event(eventFirebasePushId, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players);
+        Event event = new Event(eventFirebasePushId, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players, enteredDescription, maxplayers);
         mDatabase.child("events").child(eventFirebasePushId).setValue(event);
 
         // Update the User table

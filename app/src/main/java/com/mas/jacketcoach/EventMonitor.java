@@ -38,6 +38,8 @@ public class EventMonitor extends AppCompatActivity {
     private Event mEvent;
     // Views
     private TextView eventName_textView;
+    private TextView eventDescription_textView;
+    private TextView maxPlayers_textView;
     private TextView eventSport_textView;
     private TextView eventDate_textView;
     private TextView eventOrganizer_textView;
@@ -73,6 +75,8 @@ public class EventMonitor extends AppCompatActivity {
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
         eventName_textView = (TextView) findViewById(R.id.event_name);
+        eventDescription_textView = (TextView) findViewById(R.id.event_description);
+        maxPlayers_textView = (TextView) findViewById(R.id.maxplayers);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
         eventDate_textView = (TextView) findViewById(R.id.event_date);
         players_layout = (LinearLayout) findViewById(R.id.layout_players);
@@ -111,6 +115,8 @@ public class EventMonitor extends AppCompatActivity {
         players_layout.removeViews(1, players_layout.getChildCount() - 2);
 
         eventName_textView.setText(mEvent.getName());
+        eventDescription_textView.setText(mEvent.getDescription());
+        maxPlayers_textView.setText(String.valueOf(mEvent.getMaxplayers()));
         eventSport_textView.setText(mEvent.getSport());
         eventDate_textView.setText(mEvent.getDate());
 

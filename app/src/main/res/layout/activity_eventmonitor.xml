@@ -50,6 +50,34 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/event_description"
+            android:textColor="@color/GT_Color"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/event_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text=""
+            android:textSize="18sp"
+            tools:text="@tools:sample/lorem" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/GT_Color_Navy" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/event_sport_label"
             android:textColor="@color/GT_Color"
             android:textSize="13sp" />
@@ -166,5 +194,27 @@
             android:layout_marginTop="15dp"
             android:background="@color/GT_Color_Navy" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Players"
+            android:textColor="@color/GT_Color"
+            android:textSize="13sp" />
+        <TextView
+            android:id="@+id/maxplayers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_view_on_map_label"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/GT_Color_Navy" />
+    </LinearLayout>
 </LinearLayout>
