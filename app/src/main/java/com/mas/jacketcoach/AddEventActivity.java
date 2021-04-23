@@ -60,6 +60,8 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
     private EditText descriptionEditText;
     private Spinner maxplayersSpinner;
     private int maxplayers;
+    private Spinner weatherSpinner;
+    private boolean rainorshine;
     private Spinner sportSpinner;
     private EditText sportEditText;
     private String sport;
@@ -119,7 +121,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         maxplayersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                maxplayers = position + 2;
+                maxplayers = position + 1;
             }
 
             @Override
@@ -129,7 +131,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         });
         Integer[] numbers = new Integer[30];
         for (int i = 0; i < numbers.length; i++) {
-            numbers[i] = i + 2;
+            numbers[i] = i + 1;
         }
         ArrayAdapter<Integer> adapterInt = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, numbers);
         maxplayersSpinner.setAdapter(adapterInt);
@@ -139,6 +141,22 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
         adapterString.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sportSpinner.setAdapter(adapterString);
         sportSpinner.setOnItemSelectedListener(this);
+        weatherSpinner = (Spinner) findViewById(R.id.weatherSpinner);
+        ArrayAdapter<CharSequence> weatherAdapter = ArrayAdapter.createFromResource(this, R.array.weather_dropdown,android.R.layout.simple_spinner_item);
+        weatherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        weatherSpinner.setAdapter(weatherAdapter);
+        weatherSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    rainorshine = true;
+                } else {
+                    rainorshine = false;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
         gearText = (TextView) findViewById(R.id.gearText);
         //Firebase setup
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -239,7 +257,7 @@ public class AddEventActivity extends AppCompatActivity implements AdapterView.O
             players.add(user.getUid());
         }
 
-        Event event = new Event(eventFirebasePushId, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players, enteredDescription, maxplayers);
+        Event event = new Event(eventFirebasePushId, user.getUid(), enteredName, enteredSport, enteredDate, latlng.latitude, latlng.longitude, players, enteredDescription, maxplayers, rainorshine);
         mDatabase.child("events").child(eventFirebasePushId).setValue(event);
 
         // Update the User table

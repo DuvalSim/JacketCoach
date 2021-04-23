@@ -51,6 +51,10 @@
         <item>Handball</item>
         <item>Other</item>
     </string-array>
+    <string-array name="weather_dropdown">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
     <string name="view_more_eventInfo">View more</string>
     <string name="extra_eventToMonitor">EVENT_MONITORED</string>
     <string name="event_description">Event Description</string>

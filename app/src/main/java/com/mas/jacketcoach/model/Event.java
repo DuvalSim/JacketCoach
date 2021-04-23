@@ -1,5 +1,7 @@
 package com.mas.jacketcoach.model;
 
+import android.app.ApplicationErrorReport;
+
 import com.google.firebase.database.DataSnapshot;
 
 import java.io.Serializable;
@@ -17,13 +19,14 @@ public class Event implements Serializable {
     private ArrayList<String> players;
     private String description;
     private int maxplayers;
+    private boolean rainorshine;
 
     // Empty constructor required for reading database into an object using ValueEventListener
     public Event() {
 
     }
 
-    public Event(String id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players, String description, int maxplayers) {
+    public Event(String id, String idOrganizer, String name, String sport, String date, double latitude, double longitude, ArrayList<String> players, String description, int maxplayers, boolean rainorshine) {
         this.id = id;
         this.idOrganizer = idOrganizer;
         this.name = name;
@@ -34,6 +37,7 @@ public class Event implements Serializable {
         this.players = players;
         this.description = description;
         this.maxplayers = maxplayers;
+        this.rainorshine = rainorshine;
     }
 
     public static Event fromDataSnapshot(DataSnapshot eventSnapshot){
@@ -50,7 +54,8 @@ public class Event implements Serializable {
         for (DataSnapshot player : eventSnapshot.child("players").getChildren()) {
             players.add(player.getValue().toString());
         }
-        return new Event(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers);
+        boolean rainorshine = eventSnapshot.child("rainorshine").getValue().toString().equals("Yes");
+        return new Event(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers, rainorshine);
     }
 
     public String getId() {
@@ -133,6 +138,10 @@ public class Event implements Serializable {
         this.maxplayers = maxplayers;
     }
 
+    public boolean getRainorshine() { return rainorshine;}
+
+    public void setRainorshine(boolean rainorshine) {this.rainorshine = rainorshine;}
+
     @Override
     public String toString() {
         return "Event{" +
@@ -146,6 +155,7 @@ public class Event implements Serializable {
                 ", players=" + players +
                 ", description='" + description + '\'' +
                 ", maxplayers=" + maxplayers +
+                ", rainorshine=" + rainorshine +
                 '}';
     }
 
@@ -163,12 +173,13 @@ public class Event implements Serializable {
                 date.equals(event.date) &&
                 description.equals(event.description) &&
                 maxplayers==event.maxplayers &&
+                rainorshine==event.rainorshine &&
                 Objects.equals(players, event.players);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers);
+        return Objects.hash(id, idOrganizer, name, sport, date, latitude, longitude, players, description, maxplayers, rainorshine);
     }
 
 

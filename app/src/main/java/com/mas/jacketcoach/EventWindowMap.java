@@ -104,6 +104,9 @@ public class EventWindowMap extends BottomSheetDialogFragment {
         // Check if current user is already a participant of this event
         if (eventInfo.getPlayers().contains(mAuth.getCurrentUser().getUid())) {
             buttonParticipate.setText(R.string.opt_out);
+        } else if (eventInfo.getPlayers().size() >= eventInfo.getMaxplayers()) {
+            buttonParticipate.setEnabled(false);
+            buttonParticipate.setText("No more players allowed");
         }
 
         buttonParticipate.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +126,7 @@ public class EventWindowMap extends BottomSheetDialogFragment {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // delete the user from the players list of this event
+                                    int numplayers = eventInfo.getPlayers().size();
                                     eventInfo.getPlayers().remove(mAuth.getCurrentUser().getUid());
                                     updateEventsPlayerInDB();
                                     buttonParticipate.setText(R.string.participate);

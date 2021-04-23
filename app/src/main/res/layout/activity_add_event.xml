@@ -120,11 +120,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Maximum number of players allowed"
-                    android:textSize="18dp"
+                    android:layout_marginStart="30dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginEnd="30dp"
-                    android:layout_marginStart="30dp" />
+                    android:text="Maximum number of players allowed"
+                    android:textSize="18dp" />
 
                 <Spinner
                     android:id="@+id/maxplayers"
@@ -170,6 +170,25 @@
                     android:textSize="18dp"
                     android:layout_marginTop="30dp"
                     android:textStyle="bold"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
+
+                <TextView
+                    android:id="@+id/weathertext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Will the event happen rain or shine?"
+                    android:textSize="18dp"
+                    android:layout_marginTop="30dp"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="30dp" />
+
+                <Spinner
+                    android:id="@+id/weatherSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="30dp"
                     android:layout_marginStart="30dp" />
 

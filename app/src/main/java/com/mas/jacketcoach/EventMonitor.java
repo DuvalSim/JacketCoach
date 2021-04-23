@@ -47,6 +47,7 @@ public class EventMonitor extends AppCompatActivity {
     private TextView eventSport_textView;
     private TextView eventDate_textView;
     private TextView eventOrganizer_textView;
+    private TextView rainorshine_textView;
     private LinearLayout players_layout;
     private MaterialButton viewOnMap_button;
 
@@ -84,6 +85,7 @@ public class EventMonitor extends AppCompatActivity {
         maxPlayers_textView = (TextView) findViewById(R.id.maxplayers);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
         eventDate_textView = (TextView) findViewById(R.id.event_date);
+        rainorshine_textView = (TextView) findViewById(R.id.rainorshine);
         players_layout = (LinearLayout) findViewById(R.id.layout_players);
         eventOrganizer_textView = (TextView) findViewById(R.id.event_organizer);
         viewOnMap_button = (MaterialButton) findViewById(R.id.event_view_on_map);
@@ -124,6 +126,11 @@ public class EventMonitor extends AppCompatActivity {
         maxPlayers_textView.setText(String.valueOf(mEvent.getMaxplayers()));
         eventSport_textView.setText(mEvent.getSport());
         eventDate_textView.setText(mEvent.getDate());
+        if (mEvent.getRainorshine()) {
+            rainorshine_textView.setText("Yes");
+        } else {
+            rainorshine_textView.setText("No");
+        }
 
         try {
             // https://stackoverflow.com/questions/9409195/how-to-get-complete-address-from-latitude-and-longitude
