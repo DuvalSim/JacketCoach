@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -14,12 +12,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,7 +42,7 @@ public class EventMonitor extends AppCompatActivity {
     private TextView eventDate_textView;
     private TextView eventOrganizer_textView;
     private LinearLayout players_layout;
-    private Button viewOnMap_button;
+    private MaterialButton viewOnMap_button;
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -81,7 +79,7 @@ public class EventMonitor extends AppCompatActivity {
         eventDate_textView = (TextView) findViewById(R.id.event_date);
         players_layout = (LinearLayout) findViewById(R.id.layout_players);
         eventOrganizer_textView = (TextView) findViewById(R.id.event_organizer);
-        viewOnMap_button = (Button) findViewById(R.id.event_view_on_map);
+        viewOnMap_button = (MaterialButton) findViewById(R.id.event_view_on_map);
         viewOnMap_button.setOnClickListener(viewOnMapClicked);
         // Getting event reference in DB
         eventRef = mDatabase.child(getString(R.string.events_table_key)).child(mEvent.getId());
