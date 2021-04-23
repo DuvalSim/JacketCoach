@@ -224,6 +224,7 @@
             android:id="@+id/maxplayers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18sp"
             android:text="@string/button_view_on_map_label"/>
         <View
             android:layout_width="match_parent"

@@ -155,6 +155,7 @@ public class EventMonitor extends AppCompatActivity {
         if(index == 0){
             TextView noPlayerTextView = new TextView(this);
             noPlayerTextView.setText(R.string.monitoring_noPlayerRegistered);
+            noPlayerTextView.setTextSize(18);
             players_layout.addView(noPlayerTextView, 1);
         }
     }
