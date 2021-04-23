@@ -1,6 +1,8 @@
 package com.mas.jacketcoach;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,14 +30,18 @@ import com.mas.jacketcoach.helper.MapStateManager;
 import com.mas.jacketcoach.model.Event;
 import com.mas.jacketcoach.model.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 public class EventMonitor extends AppCompatActivity {
 
     private Event mEvent;
     // Views
     private TextView eventName_textView;
+    private TextView eventAddress_textView;
     private TextView eventDescription_textView;
     private TextView maxPlayers_textView;
     private TextView eventSport_textView;
@@ -73,6 +79,7 @@ public class EventMonitor extends AppCompatActivity {
         mEvent = (Event) getIntent().getSerializableExtra("EVENT_MONITORED");
         isCurrentUserOrganizer = mAuth.getCurrentUser().getUid().equals(mEvent.getIdOrganizer());
         eventName_textView = (TextView) findViewById(R.id.event_name);
+        eventAddress_textView = (TextView) findViewById(R.id.event_address);
         eventDescription_textView = (TextView) findViewById(R.id.event_description);
         maxPlayers_textView = (TextView) findViewById(R.id.maxplayers);
         eventSport_textView = (TextView) findViewById(R.id.event_sport);
@@ -117,6 +124,23 @@ public class EventMonitor extends AppCompatActivity {
         maxPlayers_textView.setText(String.valueOf(mEvent.getMaxplayers()));
         eventSport_textView.setText(mEvent.getSport());
         eventDate_textView.setText(mEvent.getDate());
+
+        try {
+            // https://stackoverflow.com/questions/9409195/how-to-get-complete-address-from-latitude-and-longitude
+            Geocoder geocoder;
+            List<Address> addresses;
+            geocoder = new Geocoder(this, Locale.getDefault());
+
+            addresses = geocoder.getFromLocation(mEvent.getLatitude(), mEvent.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+            eventAddress_textView.setText(address);
+            eventAddress_textView.setTextSize(18);
+        } catch (IOException e) {
+            eventAddress_textView.setText("Unable to retrieve address. Use the map instead.");
+        }
+
 
         String nameOrganizer = searchUserWithUID(mEvent.getIdOrganizer());
         eventOrganizer_textView.setText(nameOrganizer);

@@ -54,4 +54,5 @@
     <string name="view_more_eventInfo">View more</string>
     <string name="extra_eventToMonitor">EVENT_MONITORED</string>
     <string name="event_description">Event Description</string>
+    <string name="event_address_label">Address</string>
 </resources>
